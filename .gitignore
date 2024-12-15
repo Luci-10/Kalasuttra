@@ -1,0 +1,62 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+env/
+venv/
+ENV/
+*.egg-info/
+*.egg
+dist/
+build/
+
+# Flask specific files
+instance/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment variables
+.env
+*.env
+.env.*
+
+# Testing
+.coverage
+*.coveragerc
+.hypothesis/
+
+# Logs
+*.log
+*.out
+*.err
+logs/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# macOS files
+.DS_Store
+
+# Linux files
+*.swp
+.swo
+
+# Visual Studio Code
+.vscode/
+
+# PyCharm
+.idea/
+
+# Temporary files
+*.tmp
+*.temp
+
+# Local configuration files
+config.py

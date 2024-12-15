@@ -1,0 +1,142 @@
+{% include "header.html" %}
+
+<div class="page">
+      <!-- Page header-->
+      <header class="section page-header">
+        <!-- RD Navbar-->
+        <div class="rd-navbar-wrap">
+          <nav class="rd-navbar" data-layout="rd-navbar-fixed" data-sm-layout="rd-navbar-fixed" data-sm-device-layout="rd-navbar-fixed" data-md-layout="rd-navbar-static" data-md-device-layout="rd-navbar-fixed" data-lg-device-layout="rd-navbar-static" data-lg-layout="rd-navbar-static" data-stick-up-clone="false" data-md-stick-up-offset="5px" data-lg-stick-up-offset="5px" data-md-stick-up="true" data-lg-stick-up="true">
+            <div class="rd-navbar-main-outer">
+              <div class="rd-navbar-main">
+                <div class="rd-navbar-login">
+            <a href="/login" class="btn btn-primary login-btn">Login</a>
+          </div>
+                <!-- RD Navbar Panel-->
+                <div class="rd-navbar-panel">
+                  <button class="rd-navbar-toggle" data-rd-navbar-toggle=".rd-navbar-nav-wrap"><span></span></button>
+                  <!-- RD Navbar Brand-->
+                  <div class="rd-navbar-brand"><a class="brand" href="/">
+                      <div class="brand__name"><img class="brand__logo-dark" src="static/images/kalasuttra-logo1.png" alt="" width="100" height="57"/><img class="brand__logo-light" src="static/images/kalasuttra-logo.png" alt="" width="243" height="57"/>
+                      </div></a></div>
+                </div>
+                <!-- RD Navbar Nav-->
+                <div class="rd-navbar-nav-wrap">
+                  <div class="rd-navbar-element">
+                    <ul class="list-icons list-inline-sm">
+                      <li><a class="icon icon-sm fa fa-instagram icon-style-camera" href="#"><span></span><span></span><span></span><span></span></a></li>
+                      <li><a class="icon icon-sm fa fa-facebook icon-style-camera" href="#"><span></span><span></span><span></span><span></span></a></li>
+                      <li><a class="icon icon-sm fa fa-pinterest icon-style-camera" href="#"><span></span><span></span><span></span><span></span></a></li>
+                    </ul>
+                  </div>
+                  <!-- RD Navbar Nav-->
+                  <ul class="rd-navbar-nav">
+                    <li><a href="/">Home</a>
+                    </li>
+                    <li><a href="/about-kalasuttra">About kalasuttra</a>
+                    </li>
+                    <li><a href="/upcycle">Upcycle</a>
+                    </li>
+                    <li class="active"><a href="/contact-me">Contact Me</a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </nav>
+        </div>
+      </header>
+    </div>
+
+
+
+      <!-- Breadcrumbs-->
+      <section class="breadcrumbs-custom bg-image" style="background-image: url(static/images/breadcrumbs-image.jpg);">
+        <div class="shell">
+          <h1 class="breadcrumbs-custom__title">Contact Me</h1>
+          <ul class="breadcrumbs-custom__path">
+            <li><a href="index.html">Home</a></li>
+            <li class="active">Contact Me</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Get in Touch-->
+      <section class="section section-md bg-white text-center">
+        <div class="shell">
+          <div class="range range-md-center">
+            <div class="cell-md-11 cell-lg-10">
+              <h2 class="text-bold">Get in Touch</h2>
+              <p><span class="box-width-2">I am available 24/7 by fax, e-mail or by phone. You can also use a quick contact form to ask a question about my services.</span></p>
+              <div class="layout-columns">
+                <div class="layout-columns__main">
+                  <div class="layout-columns__main-inner">
+                    <!-- RD Mailform-->
+                    <form class="rd-mailform"
+      data-form-output="form-output-global"
+      data-form-type="contact"
+      method="POST"
+      action="{{ url_for('contact') }}">>
+  <div class="form-wrap">
+    <input class="form-input" id="contact-date" type="text" name="date" placeholder="Event Date" required>
+    <label class="form-label" for="contact-date">Event Date</label>
+  </div>
+  <div class="form-wrap">
+    <input class="form-input" id="contact-name" type="text" name="name" placeholder="Your Name" required>
+    <label class="form-label" for="contact-name">Your Name</label>
+  </div>
+  <div class="form-wrap">
+    <input class="form-input" id="contact-email" type="email" name="email" placeholder="E-mail" required>
+    <label class="form-label" for="contact-email">E-mail</label>
+  </div>
+  <div class="form-wrap">
+    <label class="form-label" for="contact-message">Your Message</label>
+    <textarea class="form-input" id="contact-message" name="message" placeholder="Your Message" required></textarea>
+  </div>
+  <div class="form-wrap form-button offset-1">
+    <button class="button button-block button-primary-outline button-ujarak" type="submit">Make an Appointment</button>
+  </div>
+</form>
+                  </div>
+                </div>
+                <div class="layout-columns__aside">
+                  <div class="layout-columns__aside-item">
+                    <p class="heading-5">Socials</p>
+                    <div class="divider-modern"></div>
+                    <ul class="list-inline-xs">
+                      <li><a class="icon icon-md icon-gray-7 fa fa-facebook" href="#"></a></li>
+                      <li><a class="icon icon-md icon-gray-7 fa fa-twitter" href="#"></a></li>
+                      <li><a class="icon icon-md icon-gray-7 fa fa-google" href="#"></a></li>
+                      <li><a class="icon icon-md icon-gray-7 fa fa-youtube" href="#"></a></li>
+                    </ul>
+                  </div>
+                  <div class="layout-columns__aside-item">
+                    <p class="heading-5">Phone</p>
+                    <div class="divider-modern"></div>
+                    <div class="unit unit-horizontal unit-spacing-xxs">
+                      <div class="unit__left"><span class="icon icon-md icon-primary material-icons-local_phone"></span></div>
+                      <div class="unit__body"><a href="tel:#">1-800-1234-567</a></div>
+                    </div>
+                  </div>
+                  <div class="layout-columns__aside-item">
+                    <p class="heading-5">Address</p>
+                    <div class="divider-modern"></div>
+                    <div class="unit unit-horizontal unit-spacing-xxs">
+                      <div class="unit__left"><span class="icon icon-md icon-primary material-icons-location_on"></span></div>
+                      <div class="unit__body"><a href="#">267 Park Avenue New York, NY 90210</a></div>
+                    </div>
+                  </div>
+                  <div class="layout-columns__aside-item">
+                    <p class="heading-5">opening hours</p>
+                    <div class="divider-modern"></div>
+                    <div class="unit unit-horizontal unit-spacing-xxs">
+                      <div class="unit__left"><span class="icon icon-md icon-primary mdi mdi-clock"></span></div>
+                      <div class="unit__body"><span>I work every day 9:00–23:00</span></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      {% include "footer.html" %}

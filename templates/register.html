@@ -1,0 +1,32 @@
+{% include "header.html" %}
+<div class="container">
+  <div class="row">
+    <div class="col-lg-8 col-md-10 mx-auto content">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+      <h2>Create a New Account</h2>
+      <form action="/register" method="POST">
+        <div class="form-group">
+          <label for="name">Full Name:</label>
+          <input type="text" id="name" name="name" required>
+        </div>
+        <div class="form-group">
+          <label for="email">Email:</label>
+          <input type="email" id="email" name="email" required>
+        </div>
+        <div class="form-group">
+          <label for="password">Password:</label>
+          <input type="password" id="password" name="password" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Register</button>
+      </form>
+      <p>Already have an account? <a href="/login">Log in</a></p>
+    </div>
+  </div>
+</div>
+{% include "footer.html" %}
