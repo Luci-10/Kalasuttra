@@ -1,0 +1,58 @@
+.rd-navbar-main {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    /* Allows wrapping on smaller screens */
+}
+
+.rd-navbar-brand {
+    flex-shrink: 0;
+    /* Prevents the logo from resizing */
+}
+
+.rd-navbar-nav-wrap {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.rd-navbar-nav {
+    display: flex;
+    gap: 20px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.rd-navbar-element {
+    display: flex;
+    gap: 10px;
+}
+
+.rd-navbar-login {
+    margin-left: auto;
+}
+
+.login-btn {
+    padding: 8px 16px;
+}
+
+@media (max-width: 768px) {
+    .rd-navbar-main {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .rd-navbar-nav-wrap {
+        justify-content: flex-start;
+        width: 100%;
+    }
+
+    .rd-navbar-login {
+        margin-top: 10px;
+        width: 100%;
+        text-align: right;
+    }
+}
