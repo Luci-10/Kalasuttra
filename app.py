@@ -5,7 +5,6 @@ from wtforms.validators import DataRequired, Email, EqualTo, Length
 from flask_bcrypt import Bcrypt
 from werkzeug.security import check_password_hash, generate_password_hash
 from pymongo import MongoClient
-from flask_mail import Mail, Message
 from itsdangerous import URLSafeTimedSerializer
 import random
 import smtplib

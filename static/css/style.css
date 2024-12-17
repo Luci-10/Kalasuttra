@@ -561,6 +561,7 @@ hr {
 	overflow: hidden;
 	min-height: 20vh !important;
 	width: 100%;
+	padding: ;
 }
 
 .page-header {
@@ -13620,7 +13621,7 @@ html.lt-ie-10 .range > .cell-lg-12 {
 }
 
 .rd-navbar, .rd-navbar.rd-navbar--is-clone {
-	display: none;
+  display: block;
 }
 
 .rd-navbar-fixed,
@@ -33740,4 +33741,102 @@ body:not(.lg-from-hash) .lg-outer.lg-start-zoom .lg-item.lg-complete .lg-object 
 }
 .btn:hover {
   background-color: #0056b3;
+}
+
+/* General Navbar Styling */
+.rd-navbar {
+    background-color: #ffffff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+}
+
+.rd-navbar-nav {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.rd-navbar-nav li {
+    position: relative;
+    padding: 10px 15px;
+}
+
+.rd-navbar-nav a {
+    text-decoration: none;
+    color: #333333;
+    transition: color 0.3s ease;
+}
+
+.rd-navbar-nav a:hover {
+    color: #007bff;
+}
+
+/* Dropdown Styling */
+.rd-navbar-nav .dropdown:hover > .dropdown-menu {
+    display: block;
+}
+
+.dropdown-toggle::after {
+    content: " ▼";
+    font-size: 12px;
+    margin-left: 5px;
+}
+
+/* Dropdown Menu */
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    list-style: none;
+    padding: 10px 0;
+    min-width: 150px;
+    z-index: 1000;
+}
+
+.dropdown-menu li {
+    padding: 5px 15px;
+}
+
+.dropdown-menu li a {
+    color: #333333;
+    text-decoration: none;
+    display: block;
+    width: 100%;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.dropdown-menu li a:hover {
+    background-color: #f8f9fa;
+    color: #007bff;
+}
+
+/* Active Link Styling */
+.rd-navbar-nav li.active > a {
+    color: #007bff;
+    font-weight: bold;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .rd-navbar-nav {
+        flex-direction: column;
+    }
+
+    .rd-navbar-nav li {
+        padding: 10px;
+    }
+
+    .dropdown-menu {
+        position: static;
+        box-shadow: none;
+    }
+}
+
+.drop-menu {
+z-index: 1000;
 }
