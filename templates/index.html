@@ -6,7 +6,7 @@
       <header class="section page-header">
         <!-- RD Navbar-->
         <div class="rd-navbar-wrap">
-          <nav class="rd-navbar" data-layout="rd-navbar-fixed" data-sm-layout="rd-navbar-fixed" data-sm-device-layout="rd-navbar-fixed" data-md-layout="rd-navbar-static" data-md-device-layout="rd-navbar-fixed" data-lg-device-layout="rd-navbar-static" data-lg-layout="rd-navbar-static" data-stick-up-clone="false" data-md-stick-up-offset="5px" data-lg-stick-up-offset="5px" data-md-stick-up="true" data-lg-stick-up="true">
+          <nav class="rd-navbar drop-menu" data-layout="rd-navbar-fixed" data-sm-layout="rd-navbar-fixed" data-sm-device-layout="rd-navbar-fixed" data-md-layout="rd-navbar-static" data-md-device-layout="rd-navbar-fixed" data-lg-device-layout="rd-navbar-static" data-lg-layout="rd-navbar-static" data-stick-up-clone="false" data-md-stick-up-offset="5px" data-lg-stick-up-offset="5px" data-md-stick-up="true" data-lg-stick-up="true">
     <div class="rd-navbar-main-outer">
         <div class="rd-navbar-main">
             <!-- RD Navbar Panel -->
@@ -19,30 +19,29 @@
             </div>
             <!-- RD Navbar Nav -->
             <div class="rd-navbar-nav-wrap">
-                <ul class="rd-navbar-nav">
-                    <li class="active"><a href="/">Home</a></li>
-                    <li><a href="/about-kalasuttra">About kalasuttra</a></li>
-                    <li><a href="/upcycle">Upcycle</a></li>
-                    <li><a href="/contact-me">Contact Me</a></li>
+  <ul class="rd-navbar-nav">
+    <li class="active"><a href="/">Home</a></li>
+    <li><a href="/about-kalasuttra">About Kalasuttra</a></li>
+    <li><a href="/upcycle">Upcycle</a></li>
+    <li><a href="/contact-me">Contact Me</a></li>
 
-                    {% if session.get("user") %}
-                    <!-- My Account Dropdown -->
-                    <li class="dropdown drop-menu">
-                        <a class="dropdown-toggle" href="#" id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                            My Account
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="accountDropdown">
-                            <li><a class="dropdown-item" href="/orders">Order History</a></li>
-                            <li><a class="dropdown-item" href="/saved-address">Saved Address</a></li>
-                            <li><a class="dropdown-item" href="/logout">Logout</a></li>
-                        </ul>
-                    </li>
-                    {% else %}
-                    <!-- Login Tab -->
-                    <a href="/login" class="btn btn-primary login-btn">Login</a>
-                    {% endif %}
-                </ul>
-            </div>
+    {% if session.get("user") %}
+    <!-- My Account Link -->
+    <li><a href="/my-account">My Account</a></li>
+    <li>
+      <a href="/cart" class="cart-icon">
+        <img src="static/images/cart-icon.png" alt="Cart" width="24" height="24" />
+      </a>
+    </li>
+    {% else %}
+    <!-- Login Button -->
+    <a href="/login" class="btn btn-primary login-btn">Login</a>
+    {% endif %}
+
+
+  </ul>
+</div>
+
         </div>
     </div>
 </nav>

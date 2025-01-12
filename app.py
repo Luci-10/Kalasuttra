@@ -180,6 +180,14 @@ def home():
 def about():
     return render_template('about-me.html')
 
+@app.route('/my-account')
+def Myaccount():
+    return render_template('my-account.html')
+
+@app.route('/cart')
+def cart():
+    return render_template('cart.html')
+
 @app.route('/contact-me', methods=['GET', 'POST'])
 def contact():
     if request.method == 'POST':
