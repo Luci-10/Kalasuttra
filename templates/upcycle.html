@@ -1,0 +1,51 @@
+{% include "header.html" %}
+<div class="page">
+      <!-- Page header-->
+      <header class="section page-header">
+        <!-- RD Navbar-->
+        <div class="rd-navbar-wrap">
+          <nav class="rd-navbar rd-navbar-original rd-navbar-static" data-layout="rd-navbar-fixed" data-sm-layout="rd-navbar-fixed" data-sm-device-layout="rd-navbar-fixed" data-md-layout="rd-navbar-static" data-md-device-layout="rd-navbar-fixed" data-lg-device-layout="rd-navbar-static" data-lg-layout="rd-navbar-static" data-stick-up-clone="false" data-md-stick-up-offset="5px" data-lg-stick-up-offset="5px" data-md-stick-up="true" data-lg-stick-up="true">
+    <div class="rd-navbar-main-outer">
+        <div class="rd-navbar-main">
+            <!-- RD Navbar Panel -->
+            <div class="rd-navbar-panel">
+                <button class="rd-navbar-toggle" data-rd-navbar-toggle=".rd-navbar-nav-wrap"><span></span></button>
+                <!-- RD Navbar Brand -->
+                <div class="rd-navbar-brand"><a class="brand" href="/">
+                        <div class="brand__name"><img class="brand__logo-dark" src="static/images/kalasuttra-logo1.png" alt="" width="100" height="57" /><img class="brand__logo-light" src="static/images/kalasuttra-logo1.png" alt="" width="100" height="57" />
+                        </div></a></div>
+            </div>
+            <!-- RD Navbar Nav -->
+            <div class="rd-navbar-nav-wrap">
+                <ul class="rd-navbar-nav">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about-kalasuttra">About kalasuttra</a></li>
+                    <li class="active"><a href="/upcycle">Upcycle</a></li>
+                    <li><a href="/contact-me">Contact Me</a></li>
+
+                    {% if session.get("user") %}
+    <!-- My Account Link -->
+    <li><a href="/my-account">My Account</a></li>
+    <li>
+      <a href="/cart" class="cart-icon">
+        <img src="static/images/cart-icon.png" alt="Cart" width="24" height="24" />
+      </a>
+    </li>
+    {% else %}
+    <!-- Login Button -->
+    <a href="/login" class="btn btn-primary login-btn">Login</a>
+    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>
+
+        </div>
+      </header>
+    </div>
+
+      
+
+
+      {% include "footer.html" %}

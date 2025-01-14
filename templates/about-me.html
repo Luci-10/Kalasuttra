@@ -1,0 +1,257 @@
+{% include "header.html" %}
+<div class="page">
+      <!-- Page header-->
+      <header class="section page-header">
+        <!-- RD Navbar-->
+        <div class="rd-navbar-wrap">
+          <nav class="rd-navbar rd-navbar-original rd-navbar-static" data-layout="rd-navbar-fixed" data-sm-layout="rd-navbar-fixed" data-sm-device-layout="rd-navbar-fixed" data-md-layout="rd-navbar-static" data-md-device-layout="rd-navbar-fixed" data-lg-device-layout="rd-navbar-static" data-lg-layout="rd-navbar-static" data-stick-up-clone="false" data-md-stick-up-offset="5px" data-lg-stick-up-offset="5px" data-md-stick-up="true" data-lg-stick-up="true">
+            <div class="rd-navbar-main-outer">
+              <div class="rd-navbar-main">
+                <!-- RD Navbar Panel-->
+                <div class="rd-navbar-panel">
+                  <button class="rd-navbar-toggle" data-rd-navbar-toggle=".rd-navbar-nav-wrap"><span></span></button>
+                  <!-- RD Navbar Brand-->
+                  <div class="rd-navbar-brand"><a class="brand" href="/">
+                      <div class="brand__name"><img class="brand__logo-dark" src="static/images/kalasuttra-logo1.png" alt="" width="100" height="57"/><img class="brand__logo-light" src="static/images/kalasuttra-logo1.png" alt="" width="100" height="57"/>
+                      </div></a></div>
+                </div>
+                <!-- RD Navbar Nav-->
+                <div class="rd-navbar-nav-wrap">
+<!--                  <div class="rd-navbar-element">-->
+<!--                    <ul class="list-icons list-inline-sm">-->
+<!--                      <li><a class="icon icon-sm fa fa-instagram icon-style-camera" href="#"><span></span><span></span><span></span><span></span></a></li>-->
+<!--                      <li><a class="icon icon-sm fa fa-facebook icon-style-camera" href="#"><span></span><span></span><span></span><span></span></a></li>-->
+<!--                      <li><a class="icon icon-sm fa fa-pinterest icon-style-camera" href="#"><span></span><span></span><span></span><span></span></a></li>-->
+<!--                    </ul>-->
+<!--                  </div>-->
+                  <!-- RD Navbar Nav-->
+                  <ul class="rd-navbar-nav">
+                    <li><a href="/">Home</a>
+                    </li>
+                    <li class="active"><a href="/about-kalasuttra">About kalasuttra</a>
+                    </li>
+                    <li><a href="/upcycle">Upcycle</a>
+                    </li>
+                    <li><a href="/contact-me">Contact Me</a>
+                    </li>
+
+
+                    {% if session.get("user") %}
+    <!-- My Account Link -->
+    <li><a href="/my-account">My Account</a></li>
+    <li>
+      <a href="/cart" class="cart-icon">
+        <img src="static/images/cart-icon.png" alt="Cart" width="24" height="24" />
+      </a>
+    </li>
+    {% else %}
+    <!-- Login Button -->
+    <a href="/login" class="btn btn-primary login-btn">Login</a>
+    {% endif %}
+
+                  </ul>
+
+                  </div>
+
+
+              </div>
+            </div>
+          </nav>
+        </div>
+      </header>
+    </div>
+
+
+      <!-- Breadcrumbs-->
+      <section class="breadcrumbs-custom bg-image" style="background-image: url(static/images/breadcrumbs-image.jpg);">
+        <div class="shell">
+          <h1 class="breadcrumbs-custom__title">About Me</h1>
+          <ul class="breadcrumbs-custom__path">
+            <li><a href="index.html">Home</a></li>
+            <li class="active">About Me</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- About Me-->
+      <section class="section section-md bg-white">
+        <div class="shell">
+          <div class="range range-50 range-sm-center range-md-left">
+            <div class="cell-sm-6 cell-md-5">
+              <div class="thumb-bordered"><img src="static/images/about-1-437x435.jpg" alt="" width="437" height="435"/>
+              </div>
+            </div>
+            <div class="cell-sm-6 cell-md-7">
+              <div class="box-width-3 box-centered">
+                <article class="quote-big">
+                  <p class="q">I’ve been working as a professional wedding photographer all my adult life.</p>
+                </article>
+                <div class="divider"></div>
+                <p class="text-spacing-05">My name is Susan Parker, and I have been a professional wedding photographer since 2005. On this website you can take a look at my latest photos or order a photo session for yourself or your family.</p>
+                <div class="group-3-columns" data-lightgallery="group">
+                  <div class="column-item"><a class="thumb-light" href="static/images/certificate-1-847x1200.jpg" data-lightgallery="item"><img src="static/images/certificate-1-120x171.jpg" alt="" width="120" height="171"/>
+                      <div class="thumb-light__overlay"></div></a></div>
+                  <div class="column-item"><a class="thumb-light" href="static/images/certificate-1-847x1200.jpg" data-lightgallery="item"><img src="static/images/certificate-1-120x171.jpg" alt="" width="120" height="171"/>
+                      <div class="thumb-light__overlay"></div></a></div>
+                  <div class="column-item"><a class="thumb-light" href="static/images/certificate-1-847x1200.jpg" data-lightgallery="item"><img src="static/images/certificate-1-120x171.jpg" alt="" width="120" height="171"/>
+                      <div class="thumb-light__overlay"></div></a></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- My Best Photos-->
+      <section class="section section-sm bg-gray-lighter text-center">
+        <div class="shell">
+          <div class="range range-50 range-sm-center">
+            <div class="cell-md-10 cell-lg-9">
+              <h1>My Best Photos</h1>
+              <p>In my portfolio, there are hundreds of successful photo shoots and dozens of satisfied customers. All the couples I’ve been working with were more than satisfied with my works. Check out the gallery to learn more about my skills and style.</p>
+            </div>
+          </div>
+        </div>
+        <!-- Owl Carousel-->
+        <div class="owl-carousel-wrap owl-carousel_style-2">
+          <div class="owl-carousel" data-items="1" data-autoplay="true" data-lg-items="3" data-dots="false" data-nav="true" data-stage-padding="0" data-xs-stage-padding="90" data-sm-stage-padding="140" data-md-stage-padding="260" data-lg-stage-padding="1" data-loop="true" data-margin="0" data-mouse-drag="false" data-nav-custom="#owl-carousel-nav" data-center-mode="true" data-speed="500" data-lightgallery="group"><a class="thumb-ruby thumb-mixed_large" href="static/images/group-image-1-1200x800-original.jpg" data-lightgallery="item"><img class="thumb-ruby__image" src="static/images/about-2-649x427.jpg" alt="" width="649" height="427"/>
+              <div class="thumb-ruby__caption">
+                <p class="thumb-ruby__title heading-3">Jane &amp; James</p>
+                <p class="thumb-ruby__text">If you are looking for high quality wedding photography, I will be glad to help you.</p>
+              </div></a><a class="thumb-ruby thumb-mixed_large" href="static/images/group-image-2-1200x800-original.jpg" data-lightgallery="item"><img class="thumb-ruby__image" src="static/images/about-3-649x427.jpg" alt="" width="649" height="427"/>
+              <div class="thumb-ruby__caption">
+                <p class="thumb-ruby__title heading-3">George &amp; Kate</p>
+                <p class="thumb-ruby__text">If you are looking for high quality wedding photography, I will be glad to help you.</p>
+              </div></a><a class="thumb-ruby thumb-mixed_large" href="static/images/group-image-3-1200x800-original.jpg" data-lightgallery="item"><img class="thumb-ruby__image" src="static/images/about-4-649x427.jpg" alt="" width="649" height="427"/>
+              <div class="thumb-ruby__caption">
+                <p class="thumb-ruby__title heading-3">Beach Wedding</p>
+                <p class="thumb-ruby__text">If you are looking for high quality wedding photography, I will be glad to help you.</p>
+              </div></a>
+          </div>
+          <div class="owl-outer-navigation" id="owl-carousel-nav">
+            <button class="owl-arrow owl-arrow-prev">
+              <svg x="0px" y="0px" viewbox="0 0 28.5 16" width="26" height="14">
+                <line x1="27.5" y1="8" x2="1" y2="8" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10"></line>
+                <polyline fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" points="8.8,15 1,8 8.8,1"></polyline>
+              </svg>
+            </button>
+            <button class="owl-arrow owl-arrow-next">
+              <svg x="0px" y="0px" viewbox="0 0 28.5 16" width="26" height="14">
+                <line fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="1" y1="8" x2="27.5" y2="8"></line>
+                <polyline fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" points="19.7,15 27.5,8 19.7,1"></polyline>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- What People Say-->
+      <section class="section section-md bg-white text-center">
+        <div class="shell">
+          <h1>What People Say</h1>
+          <p><span>Need more feedback? </span><a href="#">Click Here!</a></p>
+          <div class="range range-50 range-sm-center">
+            <div class="cell-sm-9 cell-md-6">
+                    <!-- Quote boxed-->
+                    <article class="quote-boxed"><span></span><span></span><span></span><span></span>
+                      <p class="quote-boxed__title">The Best Photographer I Know</p>
+                      <div class="quote-boxed__text">
+                        <svg class="quote-boxed__shape" version="1.1" x="0px" y="0px" viewbox="0 0 32.2 28" width="32.2" height="28">
+                          <path d="M6.2,0C2.8,0,0,2.8,0,6.3s2.8,6.3,6.2,6.3c6.2,0,2.1,12.3-6.2,12.3v3C14.7,27.9,20.4,0,6.2,0L6.2,0z M23.9,0       c-3.4,0-6.2,2.8-6.2,6.3s2.8,6.3,6.2,6.3c6.2,0,2.1,12.3-6.2,12.3v3C32.4,27.9,38.2,0,23.9,0L23.9,0z M23.9,0"></path>
+                        </svg>
+                        <p>I have been working with you for a long time and I can easily say that you are the best family photographer. Thank you for the high quality of your work!</p>
+                      </div>
+                      <ul class="quote-boxed__meta">
+                        <li>
+                          <div class="unit unit-horizontal unit-middle">
+                            <div class="unit__left"><img class="quote-boxed__avatar" src="static/images/user-1-46x46.jpg" alt="" width="46" height="46"/>
+                            </div>
+                            <div class="unit__body">
+                              <cite class="quote-boxed__cite">Rebecca Smith</cite>
+                            </div>
+                          </div>
+                        </li>
+                        <li>
+                          <time class="quote-boxed__time" datetime="2017">Jul 20, 2019</time>
+                        </li>
+                      </ul>
+                    </article>
+            </div>
+            <div class="cell-sm-9 cell-md-6">
+                    <!-- Quote boxed-->
+                    <article class="quote-boxed"><span></span><span></span><span></span><span></span>
+                      <p class="quote-boxed__title">You Take the Best Photos!</p>
+                      <div class="quote-boxed__text">
+                        <svg class="quote-boxed__shape" version="1.1" x="0px" y="0px" viewbox="0 0 32.2 28" width="32.2" height="28">
+                          <path d="M6.2,0C2.8,0,0,2.8,0,6.3s2.8,6.3,6.2,6.3c6.2,0,2.1,12.3-6.2,12.3v3C14.7,27.9,20.4,0,6.2,0L6.2,0z M23.9,0       c-3.4,0-6.2,2.8-6.2,6.3s2.8,6.3,6.2,6.3c6.2,0,2.1,12.3-6.2,12.3v3C32.4,27.9,38.2,0,23.9,0L23.9,0z M23.9,0"></path>
+                        </svg>
+                        <p>Thank you very much for the photos! They are very beautiful, especially printed. All the relatives are delighted and I hope to work with you again in the future.</p>
+                      </div>
+                      <ul class="quote-boxed__meta">
+                        <li>
+                          <div class="unit unit-horizontal unit-middle">
+                            <div class="unit__left"><img class="quote-boxed__avatar" src="static/images/user-2-46x46.jpg" alt="" width="46" height="46"/>
+                            </div>
+                            <div class="unit__body">
+                              <cite class="quote-boxed__cite">Jane Brown</cite>
+                            </div>
+                          </div>
+                        </li>
+                        <li>
+                          <time class="quote-boxed__time" datetime="2017">Jul 20, 2019</time>
+                        </li>
+                      </ul>
+                    </article>
+            </div>
+          </div>
+        </div>
+      </section>
+
+            <section class="section parallax-container bg-image-dark" data-parallax-img="static/images/bg-image-6-1920x1225.jpg">
+              <div class="parallax-content">
+                <section class="section-lg text-center">
+                  <div class="shell">
+                    <div class="range range-50 range-sm-center range-md-reverse range-md-middle">
+                      <div class="cell-md-6 cell-lg-5">
+                        <div class="box-width-4 box-centered">
+                          <p class="heading-1">Book Your <br> Photo Shoot </p>
+                          <div class="divider-small"></div>
+                          <p>To order a photo shoot, please share as many details about your particular wedding as possible. I will be giving you my feedback immediately after I receive your message!</p>
+                        </div>
+                      </div>
+                      <div class="cell-sm-10 cell-md-6 cell-lg-7">
+                        <article class="box-bordered">
+                          <div class="box-bordered__main">
+                            <!-- RD Mailform-->
+                            <form class="rd-mailform" data-form-output="form-output-global" data-form-type="contact" method="post" action="static/bat/rd-mailform.php">
+                              <div class="form-wrap">
+                                <input class="form-input" id="contact-date" type="text" data-time-picker="date" name="date" data-constraints="@Required">
+                                <label class="form-label" for="contact-date">Event Date</label>
+                              </div>
+                              <div class="form-wrap">
+                                <input class="form-input" id="contact-name" type="text" name="name" data-constraints="@Required">
+                                <label class="form-label" for="contact-name">Your Name</label>
+                              </div>
+                              <div class="form-wrap">
+                                <input class="form-input" id="contact-email" type="email" name="email" data-constraints="@Email @Required">
+                                <label class="form-label" for="contact-email">E-mail</label>
+                              </div>
+                              <div class="form-wrap">
+                                <label class="form-label" for="contact-message">Your Message</label>
+                                <textarea class="form-input" id="contact-message" name="message" data-constraints="@Required"></textarea>
+                              </div>
+                              <div class="form-wrap form-button offset-1">
+                                <button class="button button-block button-primary-outline button-ujarak" type="submit">make an appointment</button>
+                              </div>
+                            </form>
+                          </div>
+                        </article>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+              </div>
+            </section>
+
+
+            {% include "footer.html" %}
