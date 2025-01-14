@@ -2,14 +2,19 @@ from flask import Flask, render_template, redirect, url_for, flash, session, req
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Email, EqualTo, Length
+from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
+from flask_login import login_required
 from flask_bcrypt import Bcrypt
 from werkzeug.security import check_password_hash, generate_password_hash
 from pymongo import MongoClient
 from itsdangerous import URLSafeTimedSerializer
 import random
 import smtplib
+from functools import wraps
+from flask import abort
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from bson.objectid import ObjectId
 
 
 
@@ -17,13 +22,69 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = '1f8b0823a45b17bc6b34c9d8635df4b8dc11f00faac0874d71f3df9d20368d2f'  # Replace with a secure key
 
 # MongoDB Setup
-client = MongoClient("mongodb://localhost:27017")  # Replace with your MongoDB URI
+client = MongoClient("mongodb://localhost:27017/kalasuttra")  # Replace with your MongoDB URI
 db = client['kalasuttra']
 users_collection = db['users']
+upcycle_collection = db['upcycle']
+
 
 # Flask-Mail Configuration
 EMAIL_ADDRESS = "kalasuttra@gmail.com"
 EMAIL_PASSWORD = "svau jkwo fphb kprf"
+
+
+
+# login manager to track current user
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+
+# User class for Flask-Login
+class User(UserMixin):
+    def __init__(self, user_id, username):
+        self.id = user_id
+        self.username = username
+
+    def get_id(self):
+        print(self.id)
+        return self.id
+
+@login_manager.user_loader
+def load_user(user_id):
+    print(f"Loading user with id: {user_id}")
+    user = users_collection.find_one({"_id": ObjectId(user_id)})
+    print(f"User loaded: {user}")
+    if user:
+        print(f"User loaded: {user['_id']}")
+        return User(user_id=str(user['_id']), username=user['email'])
+    print("User not found in load_user")
+    # user = db.users_collection.find_one({"_id": user_id})
+    # if user:
+    #     return User(str(user["_id"]))
+    return None
+
+# decorator function to provide admin privilages
+def admin_only(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        #If id is not 1 then return abort with 403 error
+        if not current_user.is_authenticated or current_user.id != 1:
+            return abort(403)
+        #Otherwise continue with the route function
+        return f(*args, **kwargs)
+    return decorated_function
+
+
+# decorator function to provide logged in privilages
+def logged_in_only(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+
+        if not current_user.is_authenticated:
+            return redirect(url_for("login"))
+        #Otherwise continue with the route function
+        return f(*args, **kwargs)
+    return decorated_function
 
 
 def send_email(email, subject, body, EMAIL_ADDRESS, EMAIL_PASSWORD):
@@ -71,10 +132,16 @@ def login():
     if request.method == "POST":
         email = request.form["email"]
         password = request.form["password"]
-        user = users_collection.find_one({"email": email})
+        user = users_collection.find_one({"email": email.upper()})
+
 
         if user and check_password_hash(user["password"], password):
-            session["user"] = user["email"]
+
+            login_user(User(user_id=str(user['_id']), username=user['email']),remember=False)
+            print("login_user called successfully")
+        
+
+            session["user"] = user["email"].upper()
             flash("Login successful!", "success")
             return redirect(url_for("home"))
         else:
@@ -86,7 +153,7 @@ def login():
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
-        email = request.form["email"]
+        email = request.form["email"].upper()
         password = request.form["password"]
         name = request.form["name"]
 
@@ -106,6 +173,8 @@ def register():
         return redirect(url_for("login"))
 
     return render_template("register.html")
+
+
 
 @app.route("/forgot-password", methods=["GET", "POST"])
 def forgot_password():
@@ -181,10 +250,13 @@ def about():
     return render_template('about-me.html')
 
 @app.route('/my-account')
+@logged_in_only
 def Myaccount():
     return render_template('my-account.html')
 
 @app.route('/cart')
+@logged_in_only
+# @login_required
 def cart():
     return render_template('cart.html')
 
@@ -208,8 +280,23 @@ def contact():
     return render_template('contact-me.html')
 
 @app.route('/upcycle')
+# @logged_in_only
+# @login_required
 def upcycle():
+    # if not current_user.is_authenticated:
+    #         flash("You need to login or register")
+    #         return redirect(url_for("login"))
+ 
     return render_template('upcycle.html')
+
+
+
+@app.route('/debug')
+def debug():
+    return {
+        "is_authenticated": current_user.is_authenticated,
+        "id": current_user.get_id() if current_user.is_authenticated else None
+    }
 
 if __name__ == '__main__':
     app.run(debug=True)
