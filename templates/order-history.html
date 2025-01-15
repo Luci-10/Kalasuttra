@@ -66,23 +66,35 @@
 
       <!-- Main Content Area -->
       <!-- Main Content Area -->
-<div class="col-md-9">
-  <div class="card">
-    <div class="card-header bg-secondary text-white">
-      <h5>Your Account Details</h5>
-    </div>
-    <div class="card-body">
+
+<div class="card">
+  <div class="card-header bg-secondary text-white">
+    <h5>Order History</h5>
+  </div>
+  <div class="card-body">
+    {% if orders %}
       <ul class="list-group">
-        <li class="list-group-item"><strong>Username:</strong> {{ account.username }}</li>
-        <li class="list-group-item"><strong>Email:</strong> {{ account.email }}</li>
-        <li class="list-group-item"><strong>Account Created On:</strong> {{ account.created_on }}</li>
+        {% for order in orders %}
+          <li class="list-group-item">
+            <strong>Order ID:</strong> {{ order.id }}<br>
+            <strong>Date:</strong> {{ order.date }}<br>
+            <strong>Status:</strong> {{ order.status }}
+          </li>
+        {% endfor %}
       </ul>
-    </div>
+    {% else %}
+      <p>No orders found.</p>
+    {% endif %}
   </div>
 </div>
+
+
 
     </div>
   </div>
 
   {% include "footer.html" %}
 
+  <script src="static/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

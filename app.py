@@ -150,6 +150,8 @@ def login():
     return render_template("login.html")
 
 
+from datetime import datetime
+
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
@@ -157,22 +159,21 @@ def register():
         password = request.form["password"]
         name = request.form["name"]
 
-        # Check if user already exists
         if users_collection.find_one({"email": email}):
             flash("Email already exists. Please log in.", "error")
             return redirect(url_for("login"))
 
-        # Create new user
         hashed_password = generate_password_hash(password)
         users_collection.insert_one({
             "name": name,
             "email": email,
-            "password": hashed_password
+            "password": hashed_password,
+            "created_on": datetime.utcnow()  # Add creation date
         })
         flash("Account created successfully! Please log in.", "success")
         return redirect(url_for("login"))
-
     return render_template("register.html")
+
 
 
 
@@ -235,9 +236,32 @@ def verify_otp(email):
 
 @app.route("/logout")
 def logout():
+    logout_user()
     session.pop("user", None)
     flash("You have been logged out.", "info")
     return redirect(url_for("home"))
+
+@app.route('/saved-address', methods=['GET', 'POST'])
+@logged_in_only
+def saved_address():
+    if request.method == 'POST':
+        # Add a new address
+        address = {
+            "user_id": current_user.get_id(),
+            "name": request.form.get('name'),
+            "address_line_1": request.form.get('address_line_1'),
+            "address_line_2": request.form.get('address_line_2'),
+            "city": request.form.get('city'),
+            "state": request.form.get('state'),
+            "pincode": request.form.get('pincode')
+        }
+        db.saved_addresses.insert_one(address)
+        flash("Address added successfully!", "success")
+        return redirect(url_for('saved_address'))
+
+    # Fetch saved addresses for the logged-in user
+    addresses = list(db.saved_addresses.find({"user_id": current_user.get_id()}))
+    return render_template('saved-address.html', addresses=addresses, active_page='saved_address')
 
 
 # Home route
@@ -251,8 +275,48 @@ def about():
 
 @app.route('/my-account')
 @logged_in_only
-def Myaccount():
-    return render_template('my-account.html')
+def My_account():
+    user_id = current_user.get_id()
+    user_data = users_collection.find_one({"_id": ObjectId(user_id)})
+    account_details = {
+        "username": user_data.get("name"),
+        "email": user_data.get("email"),
+        "created_on": user_data.get("created_on", "Not Available")
+    }
+    return render_template('my-account.html', account=account_details, active_page='my_account')
+
+
+
+@app.route('/order-history')
+@logged_in_only
+def order_history():
+    # Replace with actual logic to fetch orders
+    orders = [
+        {"id": "ORD123", "date": "2023-12-10", "status": "Delivered"},
+        {"id": "ORD124", "date": "2023-12-15", "status": "In Transit"}
+    ]
+    return render_template('order-history.html', orders=orders, active_page='order_history')
+
+@app.route('/settings', methods=['GET', 'POST'])
+@logged_in_only
+def settings():
+    user_id = current_user.get_id()
+    user_data = users_collection.find_one({"_id": ObjectId(user_id)})
+    if request.method == 'POST':
+        # Update logic
+        users_collection.update_one({"_id": ObjectId(user_id)}, {"$set": {
+            "name": request.form.get("username"),
+            "email": request.form.get("email")
+        }})
+        flash("Settings updated successfully!", "success")
+        return redirect(url_for('settings'))
+    account_details = {
+        "username": user_data.get("name"),
+        "email": user_data.get("email")
+    }
+    return render_template('settings.html', account=account_details, active_page='settings')
+
+
 
 @app.route('/cart')
 @logged_in_only

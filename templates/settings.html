@@ -66,23 +66,33 @@
 
       <!-- Main Content Area -->
       <!-- Main Content Area -->
-<div class="col-md-9">
-  <div class="card">
-    <div class="card-header bg-secondary text-white">
-      <h5>Your Account Details</h5>
-    </div>
-    <div class="card-body">
-      <ul class="list-group">
-        <li class="list-group-item"><strong>Username:</strong> {{ account.username }}</li>
-        <li class="list-group-item"><strong>Email:</strong> {{ account.email }}</li>
-        <li class="list-group-item"><strong>Account Created On:</strong> {{ account.created_on }}</li>
-      </ul>
-    </div>
+
+<div class="card">
+  <div class="card-header bg-secondary text-white">
+    <h5>Settings</h5>
+  </div>
+  <div class="card-body">
+    <p>Manage your account settings here.</p>
+    <form action="/settings" method="POST">
+      <div class="mb-3">
+        <label for="username" class="form-label">Username</label>
+        <input type="text" id="username" name="username" class="form-control" value="{{ account.username }}" required>
+      </div>
+      <div class="mb-3">
+        <label for="email" class="form-label">Email</label>
+        <input type="email" id="email" name="email" class="form-control" value="{{ account.email }}" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Save Changes</button>
+    </form>
   </div>
 </div>
+
 
     </div>
   </div>
 
   {% include "footer.html" %}
 
+  <script src="static/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

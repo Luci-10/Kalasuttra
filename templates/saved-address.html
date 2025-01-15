@@ -66,18 +66,25 @@
 
       <!-- Main Content Area -->
       <!-- Main Content Area -->
-<div class="col-md-9">
-  <div class="card">
-    <div class="card-header bg-secondary text-white">
-      <h5>Your Account Details</h5>
-    </div>
-    <div class="card-body">
+<div class="card">
+  <div class="card-header bg-secondary text-white">
+    <h5>Saved Address</h5>
+  </div>
+  <div class="card-body">
+    {% if addresses %}
       <ul class="list-group">
-        <li class="list-group-item"><strong>Username:</strong> {{ account.username }}</li>
-        <li class="list-group-item"><strong>Email:</strong> {{ account.email }}</li>
-        <li class="list-group-item"><strong>Account Created On:</strong> {{ account.created_on }}</li>
+        {% for address in addresses %}
+          <li class="list-group-item">
+            <strong>{{ address.name }}</strong><br>
+            {{ address.address_line_1 }}<br>
+            {{ address.address_line_2 }}<br>
+            {{ address.city }}, {{ address.state }} - {{ address.pincode }}
+          </li>
+        {% endfor %}
       </ul>
-    </div>
+    {% else %}
+      <p>No saved addresses found. Add a new one!</p>
+    {% endif %}
   </div>
 </div>
 
