@@ -44,8 +44,62 @@
         </div>
       </header>
     </div>
+<div class="container my-5">
+  <!-- Carousel Section for Past Upcycling Projects -->
+  <div id="upcycleCarousel" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-inner">
+      {% for project in projects %}
+      <div class="carousel-item {% if loop.first %}active{% endif %}">
+        <img src="{{ project.image_url }}" class="d-block w-100" alt="Upcycle Project">
+        <div class="carousel-caption d-none d-md-block">
+          <h5>{{ project.title }}</h5>
+          <p>{{ project.description }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#upcycleCarousel" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#upcycleCarousel" data-bs-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Next</span>
+    </button>
+  </div>
+
+  <!-- Submission Form -->
+  <div class="card mt-5">
+    <div class="card-header bg-secondary text-white">
+      <h5>Submit Your Upcycling Request</h5>
+    </div>
+    <div class="card-body">
+      <form action="/submit-upcycle" method="POST" enctype="multipart/form-data">
+        <div class="mb-3">
+          <label for="name" class="form-label">Name</label>
+          <input type="text" id="name" name="name" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <label for="email" class="form-label">Email</label>
+          <input type="email" id="email" name="email" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <label for="phone" class="form-label">Phone Number</label>
+          <input type="text" id="phone" name="phone" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <label for="description" class="form-label">Description</label>
+          <textarea id="description" name="description" class="form-control" rows="4" required></textarea>
+        </div>
+        <div class="mb-3">
+          <label for="images" class="form-label">Upload Images</label>
+          <input type="file" id="images" name="images" class="form-control" multiple required>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% include "footer.html" %}
 
       
-
-
-      {% include "footer.html" %}

@@ -15,6 +15,12 @@ from flask import abort
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from bson.objectid import ObjectId
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaFileUpload
+from google.oauth2.service_account import Credentials
+from datetime import datetime
+from io import BytesIO
+from googleapiclient.http import MediaIoBaseUpload
 
 
 
@@ -63,6 +69,13 @@ def load_user(user_id):
     #     return User(str(user["_id"]))
     return None
 
+# Function to generate a unique 9-digit user ID
+def generate_unique_user_id():
+    while True:
+        user_id = str(random.randint(100000000, 999999999))  # Generate 9-digit number
+        if not users_collection.find_one({"user_id": user_id}):
+            return user_id
+
 # decorator function to provide admin privilages
 def admin_only(f):
     @wraps(f)
@@ -105,6 +118,45 @@ def send_email(email, subject, body, EMAIL_ADDRESS, EMAIL_PASSWORD):
     except Exception as e:
         print(f"Failed to send email: {e}")
 
+def initialize_drive():
+    SCOPES = ['https://www.googleapis.com/auth/drive.file']
+    creds = Credentials.from_service_account_file('credentials.json', scopes=SCOPES)
+    drive_service = build('drive', 'v3', credentials=creds)
+    return drive_service
+
+def create_folder_in_drive(folder_name, parent_folder_id=None):
+    drive_service = initialize_drive()
+    folder_metadata = {
+        'name': folder_name,
+        'mimeType': 'application/vnd.google-apps.folder'
+    }
+    if parent_folder_id:
+        folder_metadata['parents'] = [parent_folder_id]
+
+    folder = drive_service.files().create(body=folder_metadata, fields='id').execute()
+    return folder.get('id')
+
+# Upload file to a specific folder in Google Drive
+def upload_to_drive_in_folder(file_stream, file_name, folder_id):
+    drive_service = initialize_drive()
+    file_metadata = {
+        'name': file_name,
+        'parents': [folder_id]
+    }
+    media = MediaIoBaseUpload(file_stream, mimetype='image/jpeg', resumable=True)
+    file = drive_service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+
+    # Make the file publicly accessible
+    file_id = file.get('id')
+    drive_service.permissions().create(
+        fileId=file_id,
+        body={'type': 'anyone', 'role': 'reader'}
+    ).execute()
+
+    # Generate shareable link
+    shareable_link = f"https://drive.google.com/uc?id={file_id}&export=download"
+    return shareable_link
+
 # Dictionary to store OTPs temporarily
 otp_storage = {}
 
@@ -139,7 +191,7 @@ def login():
 
             login_user(User(user_id=str(user['_id']), username=user['email']),remember=False)
             print("login_user called successfully")
-        
+
 
             session["user"] = user["email"].upper()
             flash("Login successful!", "success")
@@ -163,11 +215,14 @@ def register():
             flash("Email already exists. Please log in.", "error")
             return redirect(url_for("login"))
 
+        user_id = generate_unique_user_id()
+
         hashed_password = generate_password_hash(password)
         users_collection.insert_one({
             "name": name,
             "email": email,
             "password": hashed_password,
+            "user_id": user_id,
             "created_on": datetime.utcnow()  # Add creation date
         })
         flash("Account created successfully! Please log in.", "success")
@@ -343,15 +398,79 @@ def contact():
 
     return render_template('contact-me.html')
 
+
 @app.route('/upcycle')
-# @logged_in_only
-# @login_required
 def upcycle():
-    # if not current_user.is_authenticated:
-    #         flash("You need to login or register")
-    #         return redirect(url_for("login"))
- 
-    return render_template('upcycle.html')
+    # Example projects for carousel
+    projects = [
+        {"image_url": "static/images/project1.jpg", "title": "Project 1", "description": "Description of Project 1"},
+        {"image_url": "static/images/project2.jpg", "title": "Project 2", "description": "Description of Project 2"},
+        {"image_url": "static/images/project3.jpg", "title": "Project 3", "description": "Description of Project 3"}
+    ]
+    return render_template('upcycle.html', projects=projects)
+
+
+@app.route('/submit-upcycle', methods=['POST'])
+@logged_in_only
+def submit_upcycle():
+    if not current_user.is_authenticated:
+        flash("Please log in to submit an upcycle request.", "error")
+        return redirect(url_for("login"))
+
+    # Retrieve current user's ID and details
+    user_id = current_user.get_id()
+    user_data = users_collection.find_one({"_id": ObjectId(user_id)})
+    unique_user_id = user_data["user_id"]
+
+    # Extract form data
+    name = request.form.get("name")
+    email = request.form.get("email")
+    phone = request.form.get("phone")
+    description = request.form.get("description")
+    images = request.files.getlist("images")
+
+    # Create a folder in Google Drive for this user
+    date_str = datetime.utcnow().strftime("%Y-%m-%d")
+    folder_name = f"{unique_user_id}_{date_str}"
+    parent_folder_id = "1dBWRSUtpkdyu61oFITLXu7-Qz3R-UkgN"  # Replace with your root Drive folder ID
+    user_folder_id = create_folder_in_drive(folder_name, parent_folder_id)
+
+    # Upload images to the user's folder
+    image_links = []
+    for image in images:
+        file_stream = BytesIO(image.read())
+        shareable_link = upload_to_drive_in_folder(image.stream, image.filename, user_folder_id)
+        image_links.append(shareable_link)
+
+    # Save to the upcycle collection
+    upcycle_request = {
+        "user_id": unique_user_id,
+        "name": name,
+        "email": email,
+        "phone": phone,
+        "description": description,
+        "images": image_links,
+        "submitted_at": datetime.utcnow()
+    }
+    upcycle_collection.insert_one(upcycle_request)
+
+    # Send email
+    email_subject = "New Upcycle Request Submitted"
+    email_body = f"""
+    A new upcycle request has been submitted:
+
+    Name: {name}
+    Email: {email}
+    Phone: {phone}
+    Description: {description}
+
+    Attached images:
+    {', '.join(image_links)}
+    """
+    send_email("shubhamsheshank63@gmail.com", email_subject, email_body, EMAIL_ADDRESS, EMAIL_PASSWORD)
+
+    flash("Your request has been submitted successfully!", "success")
+    return redirect(url_for("upcycle"))
 
 
 

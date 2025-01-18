@@ -60,3 +60,5 @@ logs/
 
 # Local configuration files
 config.py
+
+credentials.json
