@@ -33845,3 +33845,45 @@ body:not(.lg-from-hash) .lg-outer.lg-start-zoom .lg-item.lg-complete .lg-object 
   color: white; /* White text */
   font-weight: bold; /* Bold text */
 }
+
+
+.carousel-inner {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .carousel-item {
+      position: absolute;
+      transition: transform 1s ease, opacity 1s ease;
+    }
+
+    /* Center image */
+    .carousel-item.active img {
+      width: 60%; /* Smaller than the full width */
+      transform: scale(1);
+      opacity: 1;
+      z-index: 10;
+    }
+
+    /* Left (previous) and right (next) images */
+    .carousel-item-prev img,
+    .carousel-item-next img {
+      width: 50%; /* Smaller than the center image */
+      transform: scale(0.8);
+      opacity: 0.5;
+      filter: blur(4px);
+      z-index: 5;
+    }
+
+    /* Make sure the rest are hidden */
+    .carousel-item {
+      opacity: 0;
+    }
+    .carousel-item.active,
+    .carousel-item-prev,
+    .carousel-item-next {
+      opacity: 1;
+    }
+

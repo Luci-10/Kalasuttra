@@ -61,6 +61,7 @@ var userAgent = navigator.userAgent.toLowerCase(),
 $document.ready(function () {
 
 
+
 	/**
 	 * initCustomScrollTo
 	 * @description  init smooth anchor animations
@@ -1374,3 +1375,12 @@ $document.ready(function () {
 document.querySelector('.login-btn').addEventListener('click', (e) => {
   console.log('Redirecting to login page...');
 });
+
+
+
+
+
+
+
+
+

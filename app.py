@@ -403,10 +403,11 @@ def contact():
 def upcycle():
     # Example projects for carousel
     projects = [
-        {"image_url": "static/images/project1.jpg", "title": "Project 1", "description": "Description of Project 1"},
-        {"image_url": "static/images/project2.jpg", "title": "Project 2", "description": "Description of Project 2"},
-        {"image_url": "static/images/project3.jpg", "title": "Project 3", "description": "Description of Project 3"}
-    ]
+        {"image_url": "static/images/project1.jpg", "title": "Project 1", "description": "Denim recycle"},
+        {"image_url": "static/images/project2.jpg", "title": "Project 2", "description": "Denim Recycle"},
+        {"image_url": "static/images/project3.jpg", "title": "Project 3", "description": "Eco-friendly innovation"},
+        {"image_url": "static/images/project4.jpg", "title": "Project 4", "description": "Sustainable fashion"}
+        ]
     return render_template('upcycle.html', projects=projects)
 
 
@@ -483,3 +484,4 @@ def debug():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
