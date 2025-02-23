@@ -21,7 +21,9 @@ from google.oauth2.service_account import Credentials
 from datetime import datetime
 from io import BytesIO
 from googleapiclient.http import MediaIoBaseUpload
-
+import uuid
+from pydrive.auth import GoogleAuth
+from pydrive.drive import GoogleDrive
 
 
 app = Flask(__name__)
@@ -32,6 +34,8 @@ client = MongoClient("mongodb://localhost:27017/kalasuttra")  # Replace with you
 db = client['kalasuttra']
 users_collection = db['users']
 upcycle_collection = db['upcycle']
+appointments_collection = db['appointments']
+cart = db['cart']
 
 
 # Flask-Mail Configuration
@@ -54,6 +58,13 @@ class User(UserMixin):
     def get_id(self):
         print(self.id)
         return self.id
+
+def get_unique_user_id():
+    if current_user.is_authenticated:
+        user_data = users_collection.find_one({"_id": ObjectId(current_user.get_id())})
+        return user_data["user_id"] if user_data and "user_id" in user_data else None
+    return None
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -134,10 +145,20 @@ def create_folder_in_drive(folder_name, parent_folder_id=None):
         folder_metadata['parents'] = [parent_folder_id]
 
     folder = drive_service.files().create(body=folder_metadata, fields='id').execute()
-    return folder.get('id')
+    folder_id = folder.get('id')
+
+    drive_service.permissions().create(
+        fileId=folder_id,
+        body={'type': 'anyone', 'role': 'reader'}
+    ).execute()
+
+    folder_link = f"https://drive.google.com/drive/folders/{folder_id}"
+    return folder_id, folder_link
 
 # Upload file to a specific folder in Google Drive
 def upload_to_drive_in_folder(file_stream, file_name, folder_id):
+
+
     drive_service = initialize_drive()
     file_metadata = {
         'name': file_name,
@@ -230,6 +251,58 @@ def register():
     return render_template("register.html")
 
 
+@app.route('/update-phone', methods=['GET', 'POST'])
+@logged_in_only
+def update_phone():
+    user_id = current_user.get_id()
+
+    if request.method == 'POST':
+        new_phone = request.form.get("phone")
+        users_collection.update_one({"_id": ObjectId(user_id)}, {"$set": {"phone": new_phone}})
+        flash("Phone number updated successfully!", "success")
+        return redirect(url_for('settings'))
+
+    return render_template('update-phone.html')
+
+
+@app.route('/update-email', methods=['GET', 'POST'])
+@logged_in_only
+def update_email():
+    user_id = current_user.get_id()
+
+    if request.method == 'POST':
+        new_email = request.form.get("email")
+        users_collection.update_one({"_id": ObjectId(user_id)}, {"$set": {"email": new_email}})
+        flash("Email updated successfully!", "success")
+        return redirect(url_for('settings'))
+
+    return render_template('update-email.html')
+
+
+@app.route('/update-password', methods=['GET', 'POST'])
+@logged_in_only
+def update_password():
+    user_id = current_user.get_id()
+    user_data = users_collection.find_one({"_id": ObjectId(user_id)})
+
+    if request.method == 'POST':
+        current_password = request.form.get("current_password")
+        new_password = request.form.get("new_password")
+        confirm_password = request.form.get("confirm_password")
+
+        if not check_password_hash(user_data["password"], current_password):
+            flash("Current password is incorrect!", "error")
+        elif new_password != confirm_password:
+            flash("New passwords do not match!", "error")
+        else:
+            users_collection.update_one(
+                {"_id": ObjectId(user_id)},
+                {"$set": {"password": generate_password_hash(new_password)}}
+            )
+            flash("Password changed successfully!", "success")
+            return redirect(url_for('settings'))
+
+    return render_template('update-password.html')
 
 
 @app.route("/forgot-password", methods=["GET", "POST"])
@@ -299,10 +372,22 @@ def logout():
 @app.route('/saved-address', methods=['GET', 'POST'])
 @logged_in_only
 def saved_address():
+    user_id = current_user.get_id()
+
+    # Fetch saved addresses for the logged-in user
+    addresses = list(db.saved_addresses.find({"user_id": user_id}))
+
+    return render_template('saved-address.html', addresses=addresses, active_page='saved_address')
+
+
+@app.route('/add-address', methods=['GET', 'POST'])
+@logged_in_only
+def add_address():
+    user_id = current_user.get_id()
+
     if request.method == 'POST':
-        # Add a new address
         address = {
-            "user_id": current_user.get_id(),
+            "user_id": user_id,
             "name": request.form.get('name'),
             "address_line_1": request.form.get('address_line_1'),
             "address_line_2": request.form.get('address_line_2'),
@@ -314,9 +399,29 @@ def saved_address():
         flash("Address added successfully!", "success")
         return redirect(url_for('saved_address'))
 
-    # Fetch saved addresses for the logged-in user
-    addresses = list(db.saved_addresses.find({"user_id": current_user.get_id()}))
-    return render_template('saved-address.html', addresses=addresses, active_page='saved_address')
+    return render_template('add-address.html')
+
+@app.route('/edit-address/<address_id>', methods=['GET', 'POST'])
+@logged_in_only
+def edit_address(address_id):
+    address = db.saved_addresses.find_one({"_id": ObjectId(address_id)})
+
+    if request.method == 'POST':
+        db.saved_addresses.update_one(
+            {"_id": ObjectId(address_id)},
+            {"$set": {
+                "name": request.form.get('name'),
+                "address_line_1": request.form.get('address_line_1'),
+                "address_line_2": request.form.get('address_line_2'),
+                "city": request.form.get('city'),
+                "state": request.form.get('state'),
+                "pincode": request.form.get('pincode')
+            }}
+        )
+        flash("Address updated successfully!", "success")
+        return redirect(url_for('saved_address'))
+
+    return render_template('edit-address.html', address=address)
 
 
 # Home route
@@ -328,16 +433,30 @@ def home():
 def about():
     return render_template('about-me.html')
 
-@app.route('/my-account')
+
+@app.route('/my-account', methods=['GET', 'POST'])
 @logged_in_only
-def My_account():
+def my_account():
     user_id = current_user.get_id()
     user_data = users_collection.find_one({"_id": ObjectId(user_id)})
+
+    if request.method == 'POST':
+        phone = request.form.get("phone")
+        if phone:
+            users_collection.update_one(
+                {"_id": ObjectId(user_id)},
+                {"$set": {"phone": phone}}
+            )
+            flash("Phone number updated successfully!", "success")
+            return redirect(url_for('my_account'))
+
     account_details = {
         "username": user_data.get("name"),
         "email": user_data.get("email"),
+        "phone": user_data.get("phone"),  # Will be None if missing
         "created_on": user_data.get("created_on", "Not Available")
     }
+
     return render_template('my-account.html', account=account_details, active_page='my_account')
 
 
@@ -345,56 +464,168 @@ def My_account():
 @app.route('/order-history')
 @logged_in_only
 def order_history():
-    # Replace with actual logic to fetch orders
-    orders = [
-        {"id": "ORD123", "date": "2023-12-10", "status": "Delivered"},
-        {"id": "ORD124", "date": "2023-12-15", "status": "In Transit"}
-    ]
+    user_id = current_user.get_id()
+
+    # Fetch orders from the database for the logged-in user
+    orders = list(db.orders.find({"user_id": user_id}))
+
     return render_template('order-history.html', orders=orders, active_page='order_history')
+
 
 @app.route('/settings', methods=['GET', 'POST'])
 @logged_in_only
 def settings():
     user_id = current_user.get_id()
     user_data = users_collection.find_one({"_id": ObjectId(user_id)})
+
     if request.method == 'POST':
-        # Update logic
-        users_collection.update_one({"_id": ObjectId(user_id)}, {"$set": {
-            "name": request.form.get("username"),
-            "email": request.form.get("email")
-        }})
-        flash("Settings updated successfully!", "success")
+        action = request.form.get("action")
+
+        if action == "update_profile":
+            users_collection.update_one(
+                {"_id": ObjectId(user_id)},
+                {"$set": {
+                    "name": request.form.get("username"),
+                    "email": request.form.get("email"),
+                    "phone": request.form.get("phone"),
+                    "marketing_emails": request.form.get("marketing_emails") == "on"
+                }}
+            )
+            flash("Profile updated successfully!", "success")
+
+        elif action == "change_password":
+            current_password = request.form.get("current_password")
+            new_password = request.form.get("new_password")
+            confirm_password = request.form.get("confirm_password")
+
+            if not check_password_hash(user_data["password"], current_password):
+                flash("Current password is incorrect!", "error")
+            elif new_password != confirm_password:
+                flash("New passwords do not match!", "error")
+            else:
+                users_collection.update_one(
+                    {"_id": ObjectId(user_id)},
+                    {"$set": {"password": generate_password_hash(new_password)}}
+                )
+                flash("Password changed successfully!", "success")
+
+        elif action == "delete_account":
+            users_collection.delete_one({"_id": ObjectId(user_id)})
+            logout_user()
+            flash("Your account has been deleted.", "info")
+            return redirect(url_for("home"))
+
         return redirect(url_for('settings'))
+
     account_details = {
         "username": user_data.get("name"),
-        "email": user_data.get("email")
+        "email": user_data.get("email"),
+        "phone": user_data.get("phone", ""),
+        "marketing_emails": user_data.get("marketing_emails", False)
     }
+
     return render_template('settings.html', account=account_details, active_page='settings')
+
+@app.route('/checkout', methods=['POST'])
+@logged_in_only
+def checkout():
+    user_id = current_user.get_id()
+    cart_items = list(db.cart.find({"user_id": user_id}))
+
+    if not cart_items:
+        flash("Your cart is empty!", "warning")
+        return redirect(url_for("cart"))
+
+    order_id = str(uuid.uuid4())[:9]
+
+    for item in cart_items:
+        order = {
+            "order_id": order_id,  # Unique Order ID
+            "user_id": user_id,
+            "upcycle_id": item["upcycle_id"],  # Link order to upcycle request
+            "description": item["description"],
+            "images": item["images"],
+            "price": item["price"],
+            "status": "Processing",
+            "ordered_at": datetime.utcnow()
+        }
+        db.orders.insert_one(order)
+
+    # Empty the cart after checkout
+    db.cart.delete_many({"upcycle_id": upcycle_id})
+    db.cart.update_one(
+        {"_id": ObjectId(item["_id"])},
+        {"$set": {"status": "Ordered", "order_id": order_id, "ordered_at": datetime.utcnow()}}
+    )
+
+    flash("Order placed successfully!", "success")
+    return redirect(url_for("order_history"))
 
 
 
 @app.route('/cart')
 @logged_in_only
-# @login_required
 def cart():
-    return render_template('cart.html')
+    user_id = get_unique_user_id()
+    cart_items = list(db.cart.find({"user_id": user_id, "status": "In Cart"}))  # Fetch only active cart items
+
+    # Convert ObjectId to string for template rendering
+    for item in cart_items:
+        item["_id"] = str(item["_id"])
+
+    return render_template('cart.html', cart_items=cart_items)
+
+@app.route('/remove-from-cart/<cart_id>', methods=['POST'])
+@logged_in_only
+def remove_from_cart(cart_id):
+    db.cart.delete_one({"_id": ObjectId(cart_id)})
+    flash("Item removed from cart.", "success")
+    return redirect(url_for("cart"))
+
+
 
 @app.route('/contact-me', methods=['GET', 'POST'])
+@logged_in_only  # Ensures only logged-in users can make appointments
 def contact():
     if request.method == 'POST':
-        date = request.form.get('date')
-        name = request.form.get('name')
-        email = request.form.get('email')
-        message = request.form.get('message')
+        # Retrieve current user's ID
+        user_id = current_user.get_id()
+        user_data = users_collection.find_one({"_id": ObjectId(user_id)})
+        unique_user_id = user_data["user_id"]
 
-        # Debug: Print form data to the console
-        print(f"Date: {date}")
-        print(f"Name: {name}")
-        print(f"Email: {email}")
-        print(f"Message: {message}")
+        # Extract form data
+        name = request.form.get("name")
+        email = request.form.get("email")
+        phone = request.form.get("phone")
+        message = request.form.get("message")
+        appointment_date = datetime.utcnow()
 
-        # Optionally, add logic to process the form (e.g., save to DB, send email)
-        return "Thank you for reaching out!"
+        # Store appointment details in MongoDB
+        appointment = {
+            "user_id": unique_user_id,
+            "name": name,
+            "email": email,
+            "phone": phone,
+            "message": message,
+            "appointment_date": appointment_date
+        }
+        appointments_collection.insert_one(appointment)
+
+        # Send email notification
+        email_subject = "New Appointment Request"
+        email_body = f"""
+        A new appointment has been requested:
+
+        Name: {name}
+        Email: {email}
+        Phone: {phone}
+        Message: {message}
+        Appointment Date: {appointment_date.strftime('%Y-%m-%d %H:%M:%S')}
+        """
+        send_email("shubhamsheshank63@gmail.com", email_subject, email_body, EMAIL_ADDRESS, EMAIL_PASSWORD)
+
+        flash("Your appointment request has been submitted!", "success")
+        return redirect(url_for("contact"))
 
     return render_template('contact-me.html')
 
@@ -422,19 +653,20 @@ def submit_upcycle():
     user_id = current_user.get_id()
     user_data = users_collection.find_one({"_id": ObjectId(user_id)})
     unique_user_id = user_data["user_id"]
+    upcycle_id = str(uuid.uuid4())[:9]
 
     # Extract form data
     name = request.form.get("name")
     email = request.form.get("email")
     phone = request.form.get("phone")
     description = request.form.get("description")
-    images = request.files.getlist("images")
+    images = request.files.getlist("file[]")
 
     # Create a folder in Google Drive for this user
     date_str = datetime.utcnow().strftime("%Y-%m-%d")
     folder_name = f"{unique_user_id}_{date_str}"
     parent_folder_id = "1dBWRSUtpkdyu61oFITLXu7-Qz3R-UkgN"  # Replace with your root Drive folder ID
-    user_folder_id = create_folder_in_drive(folder_name, parent_folder_id)
+    user_folder_id, folder_link = create_folder_in_drive(folder_name, parent_folder_id)
 
     # Upload images to the user's folder
     image_links = []
@@ -445,15 +677,28 @@ def submit_upcycle():
 
     # Save to the upcycle collection
     upcycle_request = {
+        "upcycle_id": upcycle_id,
         "user_id": unique_user_id,
         "name": name,
         "email": email,
         "phone": phone,
         "description": description,
         "images": image_links,
+        "folder_link": folder_link,
         "submitted_at": datetime.utcnow()
     }
     upcycle_collection.insert_one(upcycle_request)
+
+    cart_item = {
+        "upcycle_id": upcycle_id,
+        "user_id": unique_user_id,
+        "description": description,
+        "images": image_links,
+        "folder_link": folder_link,
+        "status": "In Cart",
+        "price": None  # Admin will update price
+    }
+    db.cart.insert_one(cart_item)
 
     # Send email
     email_subject = "New Upcycle Request Submitted"
@@ -464,9 +709,10 @@ def submit_upcycle():
     Email: {email}
     Phone: {phone}
     Description: {description}
+    Google Drive Folder with Uploaded Images:
+    {folder_link}
 
-    Attached images:
-    {', '.join(image_links)}
+    
     """
     send_email("shubhamsheshank63@gmail.com", email_subject, email_body, EMAIL_ADDRESS, EMAIL_PASSWORD)
 
@@ -484,4 +730,3 @@ def debug():
 
 if __name__ == '__main__':
     app.run(debug=True)
-

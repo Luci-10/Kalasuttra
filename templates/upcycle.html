@@ -109,36 +109,34 @@
 
 
   <!-- Submission Form -->
-  <div class="card mt-5">
-    <div class="card-header bg-secondary text-white">
-      <h5>Submit Your Upcycling Request</h5>
+  <div class="container mt-5 mb-5">
+        <h2 class="text-center">Submit Your Upcycling Request</h2>
+        <p class="text-center">Please fill out the form below with the required details to submit your upcycling request.</p>
+        <form action="{{ url_for('submit_upcycle') }}" method="POST" enctype="multipart/form-data" class="mt-4">
+            <div class="mb-3">
+                <label for="name" class="form-label">Name</label>
+                <input type="text" id="name" name="name" class="form-control" required placeholder="Enter your full name">
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" id="email" name="email" class="form-control" required placeholder="Enter your email address">
+            </div>
+            <div class="mb-3">
+                <label for="phone" class="form-label">Phone Number</label>
+                <input type="tel" id="phone" name="phone" class="form-control" required placeholder="Enter your phone number">
+            </div>
+            <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea id="description" name="description" rows="4" class="form-control" required placeholder="Describe your upcycling request"></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="file" class="form-label">Upload Images</label>
+                <input type="file" id="file" name="file[]" class="form-control" multiple>
+                <small class="text-muted">Upload multiple images related to your request</small>
+            </div>
+            <button type="submit" class="btn btn-success w-100">Submit</button>
+        </form>
     </div>
-    <div class="card-body">
-      <form action="/submit-upcycle" method="POST" enctype="multipart/form-data">
-        <div class="mb-3">
-          <label for="name" class="form-label">Name</label>
-          <input type="text" id="name" name="name" class="form-control" required>
-        </div>
-        <div class="mb-3">
-          <label for="email" class="form-label">Email</label>
-          <input type="email" id="email" name="email" class="form-control" required>
-        </div>
-        <div class="mb-3">
-          <label for="phone" class="form-label">Phone Number</label>
-          <input type="text" id="phone" name="phone" class="form-control" required>
-        </div>
-        <div class="mb-3">
-          <label for="description" class="form-label">Description</label>
-          <textarea id="description" name="description" class="form-control" rows="4" required></textarea>
-        </div>
-        <div class="mb-3">
-          <label for="images" class="form-label">Upload Images</label>
-          <input type="file" id="images" name="images" class="form-control" multiple required>
-        </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
-      </form>
-    </div>
-  </div>
 </div>
 <!--<script src="{{ url_for('static', filename='js/carousel.js') }}"></script>-->
 {% include "footer.html" %}

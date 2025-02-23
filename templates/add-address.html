@@ -1,0 +1,54 @@
+{% include "header.html" %}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Add New Address</h5>
+                </div>
+                <div class="card-body">
+                    <form action="{{ url_for('add_address') }}" method="POST">
+                        <div class="mb-3">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" name="name" class="form-control" required placeholder="Enter your full name">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Address Line 1</label>
+                            <input type="text" name="address_line_1" class="form-control" required placeholder="House no., Street, Area">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Address Line 2</label>
+                            <input type="text" name="address_line_2" class="form-control" placeholder="Landmark (Optional)">
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label">City</label>
+                                <input type="text" name="city" class="form-control" required placeholder="Enter city">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">State</label>
+                                <input type="text" name="state" class="form-control" required placeholder="Enter state">
+                            </div>
+                        </div>
+
+                        <div class="mb-3 mt-3">
+                            <label class="form-label">Pincode</label>
+                            <input type="text" name="pincode" class="form-control" required placeholder="Enter pincode">
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('saved_address') }}" class="btn btn-outline-secondary">Back</a>
+                            <button type="submit" class="btn btn-success">Save Address</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include "footer.html" %}

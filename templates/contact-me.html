@@ -65,7 +65,7 @@
 
 
       <!-- Breadcrumbs-->
-      <section class="breadcrumbs-custom bg-image" style="background-image: url(static/images/breadcrumbs-image.jpg);">
+      <section class="breadcrumbs-custom bg-image" style="background-image: url(static/images/contact.png);">
         <div class="shell">
           <h1 class="breadcrumbs-custom__title">Contact Me</h1>
           <ul class="breadcrumbs-custom__path">
@@ -86,31 +86,31 @@
                 <div class="layout-columns__main">
                   <div class="layout-columns__main-inner">
                     <!-- RD Mailform-->
-                    <form class="rd-mailform"
-      data-form-output="form-output-global"
-      data-form-type="contact"
-      method="POST"
-      action="{{ url_for('contact') }}">>
-  <div class="form-wrap">
-    <input class="form-input" id="contact-date" type="text" name="date" placeholder="Event Date" required>
-    <label class="form-label" for="contact-date">Event Date</label>
-  </div>
-  <div class="form-wrap">
-    <input class="form-input" id="contact-name" type="text" name="name" placeholder="Your Name" required>
-    <label class="form-label" for="contact-name">Your Name</label>
-  </div>
-  <div class="form-wrap">
-    <input class="form-input" id="contact-email" type="email" name="email" placeholder="E-mail" required>
-    <label class="form-label" for="contact-email">E-mail</label>
-  </div>
-  <div class="form-wrap">
-    <label class="form-label" for="contact-message">Your Message</label>
-    <textarea class="form-input" id="contact-message" name="message" placeholder="Your Message" required></textarea>
-  </div>
-  <div class="form-wrap form-button offset-1">
-    <button class="button button-block button-primary-outline button-ujarak" type="submit">Make an Appointment</button>
-  </div>
+                    <form class="rd-mailform" method="POST" action="{{ url_for('contact') }}">
+    <div class="form-wrap">
+        <input class="form-input" id="contact-name" type="text" name="name" placeholder="Your Name" required>
+        <label class="form-label" for="contact-name">Your Name</label>
+    </div>
+    <div class="form-wrap">
+        <input class="form-input" id="contact-phone" type="text" name="phone" placeholder="Mobile Number" required>
+        <label class="form-label" for="contact-phone">Mobile Number</label>
+    </div>
+    <div class="form-wrap">
+        <input class="form-input" id="contact-email" type="email" name="email" placeholder="E-mail" required>
+        <label class="form-label" for="contact-email">E-mail</label>
+    </div>
+    <div class="form-wrap">
+        <label class="form-label" for="contact-message">Your Message</label>
+        <textarea class="form-input" id="contact-message" name="message" placeholder="Your Message" required></textarea>
+    </div>
+    <div class="form-wrap form-button offset-1">
+        <button class="button button-block button-primary-outline button-ujarak" type="submit">
+            Make an Appointment
+        </button>
+    </div>
 </form>
+
+
                   </div>
                 </div>
                 <div class="layout-columns__aside">

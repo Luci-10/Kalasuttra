@@ -1,0 +1,25 @@
+{% include "header.html" %}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5>Update Email</h5>
+                </div>
+                <div class="card-body">
+                    <form action="{{ url_for('update_email') }}" method="POST">
+                        <div class="mb-3">
+                            <label class="form-label">New Email</label>
+                            <input type="email" name="email" class="form-control" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update</button>
+                        <a href="{{ url_for('settings') }}" class="btn btn-outline-secondary">Cancel</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include "footer.html" %}

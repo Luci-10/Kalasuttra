@@ -1,98 +1,109 @@
+{% include "header.html" %}
 
-  {% include "header.html" %}
 <div class="page">
-      <!-- Page header-->
-      <header class="section page-header">
-        <!-- RD Navbar-->
+    <!-- Page Header -->
+    <header class="section page-header">
         <div class="rd-navbar-wrap">
-          <nav class="rd-navbar drop-menu" data-layout="rd-navbar-fixed" data-sm-layout="rd-navbar-fixed" data-sm-device-layout="rd-navbar-fixed" data-md-layout="rd-navbar-static" data-md-device-layout="rd-navbar-fixed" data-lg-device-layout="rd-navbar-static" data-lg-layout="rd-navbar-static" data-stick-up-clone="false" data-md-stick-up-offset="5px" data-lg-stick-up-offset="5px" data-md-stick-up="true" data-lg-stick-up="true">
-    <div class="rd-navbar-main-outer">
-        <div class="rd-navbar-main">
-            <!-- RD Navbar Panel -->
-            <div class="rd-navbar-panel">
-                <button class="rd-navbar-toggle" data-rd-navbar-toggle=".rd-navbar-nav-wrap"><span></span></button>
-                <!-- RD Navbar Brand -->
-                <div class="rd-navbar-brand"><a class="brand" href="/">
-                        <div class="brand__name"><img class="brand__logo-dark" src="static/images/kalasuttra-logo1.png" alt="" width="100" height="57" /><img class="brand__logo-light" src="static/images/kalasuttra-logo1.png" alt="" width="100" height="57" />
-                        </div></a></div>
-            </div>
-            <!-- RD Navbar Nav -->
-            <div class="rd-navbar-nav-wrap">
-  <ul class="rd-navbar-nav">
-    <li><a href="/">Home</a></li>
-    <li><a href="/about-kalasuttra">About Kalasuttra</a></li>
-    <li><a href="/upcycle">Upcycle</a></li>
-    <li><a href="/contact-me">Contact Me</a></li>
+            <nav class="rd-navbar drop-menu" data-layout="rd-navbar-fixed">
+                <div class="rd-navbar-main-outer">
+                    <div class="rd-navbar-main">
+                        <div class="rd-navbar-panel">
+                            <button class="rd-navbar-toggle" data-rd-navbar-toggle=".rd-navbar-nav-wrap"><span></span></button>
+                            <div class="rd-navbar-brand">
+                                <a class="brand" href="/">
+                                    <div class="brand__name">
+                                        <img class="brand__logo-dark" src="static/images/kalasuttra-logo1.png" alt="" width="100" height="57" />
+                                        <img class="brand__logo-light" src="static/images/kalasuttra-logo1.png" alt="" width="100" height="57" />
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="rd-navbar-nav-wrap">
+                            <ul class="rd-navbar-nav">
+                                <li><a href="/">Home</a></li>
+                                <li><a href="/about-kalasuttra">About Kalasuttra</a></li>
+                                <li><a href="/upcycle">Upcycle</a></li>
+                                <li><a href="/contact-me">Contact Me</a></li>
 
-    {% if session.get("user") %}
-    <!-- My Account Link -->
-    <li class="active"><a href="/my-account">My Account</a></li>
-    {% else %}
-    <!-- Login Button -->
-    <a href="/login" class="btn btn-primary login-btn">Login</a>
-    {% endif %}
+                                {% if session.get("user") %}
+                                <li class="active"><a href="/my-account">My Account</a></li>
+                                {% else %}
+                                <a href="/login" class="btn btn-primary login-btn">Login</a>
+                                {% endif %}
 
-    <!-- Cart Icon -->
-    <li>
-      <a href="/cart" class="cart-icon">
-        <img src="static/images/cart-icon.png" alt="Cart" width="24" height="24" />
-      </a>
-    </li>
-  </ul>
+                                <li>
+                                    <a href="/cart" class="cart-icon">
+                                        <img src="static/images/cart-icon.png" alt="Cart" width="24" height="24" />
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
 </div>
 
-        </div>
-    </div>
-</nav>
 
-        </div>
-      </header>
-    </div>
-  <div class="container my-5">
+<div class="container my-5">
     <div class="row">
-      <!-- Left Side Panel -->
-      <div class="col-md-3">
-  <div class="card">
-    <div class="list-group list-group-flush">
-      <a href="/my-account" class="list-group-item list-group-item-action {% if active_page == 'my_account' %}active{% endif %}">My Account</a>
-      <a href="/saved-address" class="list-group-item list-group-item-action {% if active_page == 'saved_address' %}active{% endif %}">Saved Address</a>
-      <a href="/order-history" class="list-group-item list-group-item-action {% if active_page == 'order_history' %}active{% endif %}">Order History</a>
-      <a href="/settings" class="list-group-item list-group-item-action {% if active_page == 'settings' %}active{% endif %}">Settings</a>
-      <a href="/logout" class="list-group-item list-group-item-action text-danger">Logout</a>
+        <!-- Left Sidebar -->
+        <div class="col-md-3">
+            <div class="card">
+                <div class="list-group list-group-flush">
+                    <a href="/my-account" class="list-group-item list-group-item-action {% if active_page == 'my_account' %}active{% endif %}">My Account</a>
+                    <a href="/saved-address" class="list-group-item list-group-item-action {% if active_page == 'saved_address' %}active{% endif %}">Saved Address</a>
+                    <a href="/order-history" class="list-group-item list-group-item-action {% if active_page == 'order_history' %}active{% endif %}">Order History</a>
+                    <a href="/settings" class="list-group-item list-group-item-action {% if active_page == 'settings' %}active{% endif %}">Settings</a>
+                    <a href="/logout" class="list-group-item list-group-item-action text-danger">Logout</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="col-md-9">
+            <div class="card shadow">
+                <div class="card-header bg-secondary text-white">
+                    <h5>Account Settings</h5>
+                </div>
+                <div class="card-body">
+
+                    <!-- Change Phone -->
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h6>Phone Number</h6>
+                            <p class="text-muted">{{ account.phone if account.phone else "Not Set" }}</p>
+                        </div>
+                        <a href="{{ url_for('update_phone') }}" class="btn btn-outline-primary">Change</a>
+                    </div>
+
+                    <hr>
+
+                    <!-- Change Email -->
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h6>Email</h6>
+                            <p class="text-muted">{{ account.email }}</p>
+                        </div>
+                        <a href="{{ url_for('update_email') }}" class="btn btn-outline-primary">Change</a>
+                    </div>
+
+                    <hr>
+
+                    <!-- Change Password -->
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h6>Password</h6>
+                            <p class="text-muted">********</p>
+                        </div>
+                        <a href="{{ url_for('update_password') }}" class="btn btn-outline-primary">Change</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 
-
-      <!-- Main Content Area -->
-      <!-- Main Content Area -->
-
-<div class="card">
-  <div class="card-header bg-secondary text-white">
-    <h5>Settings</h5>
-  </div>
-  <div class="card-body">
-    <p>Manage your account settings here.</p>
-    <form action="/settings" method="POST">
-      <div class="mb-3">
-        <label for="username" class="form-label">Username</label>
-        <input type="text" id="username" name="username" class="form-control" value="{{ account.username }}" required>
-      </div>
-      <div class="mb-3">
-        <label for="email" class="form-label">Email</label>
-        <input type="email" id="email" name="email" class="form-control" value="{{ account.email }}" required>
-      </div>
-      <button type="submit" class="btn btn-primary">Save Changes</button>
-    </form>
-  </div>
-</div>
-
-
-    </div>
-  </div>
-
-  {% include "footer.html" %}
-
-  <script src="static/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+{% include "footer.html" %}

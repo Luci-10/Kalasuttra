@@ -72,12 +72,25 @@
       <h5>Your Account Details</h5>
     </div>
     <div class="card-body">
-      <ul class="list-group">
+    <ul class="list-group">
         <li class="list-group-item"><strong>Username:</strong> {{ account.username }}</li>
         <li class="list-group-item"><strong>Email:</strong> {{ account.email }}</li>
+
+        {% if account.phone %}
+            <li class="list-group-item"><strong>Mobile No:</strong> {{ account.phone }}</li>
+        {% else %}
+            <li class="list-group-item">
+                <strong>Mobile No:</strong>
+                <form action="{{ url_for('my_account') }}" method="POST" class="d-flex">
+                    <input type="text" name="phone" class="form-control me-2" placeholder="Enter Mobile No" required>
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </form>
+            </li>
+        {% endif %}
+
         <li class="list-group-item"><strong>Account Created On:</strong> {{ account.created_on }}</li>
-      </ul>
-    </div>
+    </ul>
+</div>
   </div>
 </div>
 
