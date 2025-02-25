@@ -78,7 +78,14 @@
                                     <p>Google Drive Folder: <a href="{{ item.folder_link }}" target="_blank">View Images</a></p>
                                     <div class="d-flex">
                                         {% for img in item.images %}
-                                            <img src="{{ img }}" alt="Upcycle Image" class="img-thumbnail mx-2" width="100">
+                                            <img src="{{ img.resized_url }}"
+     alt="Upcycle Image"
+     class="img-thumbnail mx-2"
+     width="200" height="200"
+     loading="lazy"
+     onerror="this.onerror=null; this.src='/static/default.jpg';">
+
+
                                         {% endfor %}
                                     </div>
                                     <p>Status: <strong>{{ item.status }}</strong></p>
@@ -91,6 +98,10 @@
                                     </p>
                                     <form action="{{ url_for('remove_from_cart', cart_id=item._id) }}" method="POST">
                                         <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                                    </form>
+
+                                    <form action="{{ url_for('move_to_checkout', cart_id=item._id) }}" method="POST">
+                                        <button type="submit" class="btn btn-success btn-sm mt-2">Move to Checkout</button>
                                     </form>
                                 </li>
                             {% endfor %}

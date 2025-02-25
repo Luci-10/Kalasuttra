@@ -16,7 +16,6 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from bson.objectid import ObjectId
 from googleapiclient.discovery import build
-from googleapiclient.http import MediaFileUpload
 from google.oauth2.service_account import Credentials
 from datetime import datetime
 from io import BytesIO
@@ -24,6 +23,7 @@ from googleapiclient.http import MediaIoBaseUpload
 import uuid
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
+
 
 
 app = Flask(__name__)
@@ -36,6 +36,7 @@ users_collection = db['users']
 upcycle_collection = db['upcycle']
 appointments_collection = db['appointments']
 cart = db['cart']
+orders = db['orders']
 
 
 # Flask-Mail Configuration
@@ -171,12 +172,13 @@ def upload_to_drive_in_folder(file_stream, file_name, folder_id):
     file_id = file.get('id')
     drive_service.permissions().create(
         fileId=file_id,
-        body={'type': 'anyone', 'role': 'reader'}
+        body={'type': 'anyone', 'role': 'reader'},
+        fields = "id"
     ).execute()
 
     # Generate shareable link
-    shareable_link = f"https://drive.google.com/uc?id={file_id}&export=download"
-    return shareable_link
+    shareable_link = f"https://drive.google.com/uc?export=view&id={file_id}"
+    return shareable_link, file_id
 
 # Dictionary to store OTPs temporarily
 otp_storage = {}
@@ -372,7 +374,7 @@ def logout():
 @app.route('/saved-address', methods=['GET', 'POST'])
 @logged_in_only
 def saved_address():
-    user_id = current_user.get_id()
+    user_id = get_unique_user_id()
 
     # Fetch saved addresses for the logged-in user
     addresses = list(db.saved_addresses.find({"user_id": user_id}))
@@ -383,7 +385,7 @@ def saved_address():
 @app.route('/add-address', methods=['GET', 'POST'])
 @logged_in_only
 def add_address():
-    user_id = current_user.get_id()
+    user_id = get_unique_user_id()
 
     if request.method == 'POST':
         address = {
@@ -464,12 +466,29 @@ def my_account():
 @app.route('/order-history')
 @logged_in_only
 def order_history():
-    user_id = current_user.get_id()
-
-    # Fetch orders from the database for the logged-in user
+    user_id = get_unique_user_id()
     orders = list(db.orders.find({"user_id": user_id}))
 
-    return render_template('order-history.html', orders=orders, active_page='order_history')
+    # Convert ObjectId to string for template rendering
+    for order in orders:
+        order["_id"] = str(order["_id"])
+
+        # Ensure images is a list
+        if isinstance(order["images"], str):
+            try:
+                order["images"] = json.loads(order["images"])
+            except:
+                order["images"] = []
+
+        # Process each image in the list
+        for img in order["images"]:
+            if "resized_url" not in img:  # If resized image doesn't exist, use original
+                img["resized_url"] = resize_image_from_url(img["image_url"])
+
+    print("Order History Data:", orders)  # Debugging log
+
+    return render_template("order-history.html", orders=orders)
+
 
 
 @app.route('/settings', methods=['GET', 'POST'])
@@ -526,11 +545,54 @@ def settings():
 
     return render_template('settings.html', account=account_details, active_page='settings')
 
-@app.route('/checkout', methods=['POST'])
+import json
+
+@app.route('/move-to-checkout/<cart_id>', methods=['POST'])
 @logged_in_only
-def checkout():
-    user_id = current_user.get_id()
-    cart_items = list(db.cart.find({"user_id": user_id}))
+def move_to_checkout(cart_id):
+    user_id = get_unique_user_id()
+    cart_item = db.cart.find_one({"_id": ObjectId(cart_id), "user_id": user_id})
+
+    if not cart_item:
+        flash("Item not found in cart!", "error")
+        return redirect(url_for("cart"))
+
+    # Ensure images is a list
+    if isinstance(cart_item["images"], str):
+        try:
+            cart_item["images"] = json.loads(cart_item["images"])
+        except:
+            cart_item["images"] = []
+
+    cart_item["_id"] = str(cart_item["_id"])
+
+    # Process each image in the list
+    for img in cart_item["images"]:
+        # Save the resized URL in each image dictionary
+        img["resized_url"] = resize_image_from_url(img["image_url"])
+        print("Resized URL:", img["resized_url"])  # Debug log
+
+    return render_template("checkout.html", cart_items=[cart_item])
+
+
+
+
+@app.route('/place-order', methods=['POST'])
+@logged_in_only
+def place_order():
+    user_id = get_unique_user_id()
+    cart_items = list(db.cart.find({"user_id": user_id, "status": "In Cart"}))
+    selected_address_id = session.get("selected_address")
+
+    if not selected_address_id:
+        flash("Please select a delivery address!", "error")
+        return redirect(url_for("select_address"))
+
+    selected_address = db.saved_addresses.find_one({"_id": ObjectId(selected_address_id)})
+
+    if not selected_address:
+        flash("Address not found!", "error")
+        return redirect(url_for("select_address"))
 
     if not cart_items:
         flash("Your cart is empty!", "warning")
@@ -539,28 +601,115 @@ def checkout():
     order_id = str(uuid.uuid4())[:9]
 
     for item in cart_items:
+        price_key = f"price_{item['_id']}"
+        price = request.form.get(price_key, 0)
+
+        delivery_address = {
+            "name": selected_address["name"],
+            "address_line_1": selected_address["address_line_1"],
+            "address_line_2": selected_address["address_line_2"],
+            "city": selected_address["city"],
+            "state": selected_address["state"],
+            "pincode": selected_address["pincode"]
+        }
+
+        del_address = f"{selected_address.get('name', '')}, {selected_address.get('address_line_1', '')}, " \
+                      f"{selected_address.get('address_line_2', '')}, {selected_address.get('city', '')}, " \
+                      f"{selected_address.get('state', '')} - {selected_address.get('pincode', '')}"
+
+        # Update order in orders collection
         order = {
-            "order_id": order_id,  # Unique Order ID
+            "order_id": order_id,
             "user_id": user_id,
-            "upcycle_id": item["upcycle_id"],  # Link order to upcycle request
             "description": item["description"],
             "images": item["images"],
-            "price": item["price"],
-            "status": "Processing",
+            "folder_link": item["folder_link"],
+            "price": float(price),
+            "status": "Ordered",
+            "payment": "Unpaid",
+            "delivery_status": "Pending",
+            "delivery_address": delivery_address,
+            "del_add": del_address,
             "ordered_at": datetime.utcnow()
         }
         db.orders.insert_one(order)
 
-    # Empty the cart after checkout
-    db.cart.delete_many({"upcycle_id": upcycle_id})
-    db.cart.update_one(
-        {"_id": ObjectId(item["_id"])},
-        {"$set": {"status": "Ordered", "order_id": order_id, "ordered_at": datetime.utcnow()}}
-    )
+        # Update cart item status
+        db.cart.update_one(
+            {"_id": ObjectId(item["_id"])},
+            {"$set": {"status": "Ordered", "order_id": order_id, "ordered_at": datetime.utcnow()}}
+        )
 
     flash("Order placed successfully!", "success")
     return redirect(url_for("order_history"))
 
+
+from PIL import Image
+import requests
+from io import BytesIO
+
+
+@app.route('/select-address', methods=['GET', 'POST'])
+@logged_in_only
+def select_address():
+    user_id = get_unique_user_id()
+
+    # Fetch saved addresses & convert _id to string for Jinja rendering
+    saved_addresses = list(db.saved_addresses.find({"user_id": user_id}))
+    for address in saved_addresses:
+        address["_id"] = str(address["_id"])  # Convert ObjectId to string
+
+    if request.method == 'POST':
+        selected_address_id = request.form.get("selected_address")
+
+        if not selected_address_id:
+            flash("Please select an address!", "error")
+            return redirect(url_for("select_address"))
+
+        # Store the selected address in session for order placement
+        session["selected_address"] = str(selected_address_id)
+
+        print(f"Selected Address ID: {selected_address_id}")
+
+        return redirect(url_for("place_order"))  # Redirect back to checkout
+
+    return render_template("select_address.html", saved_addresses=saved_addresses)
+
+
+
+def resize_image_from_url(image_url, size=(200, 200)):
+    """Fetches an image from URL, resizes it, and returns the new image URL."""
+    try:
+        response = requests.get(image_url, stream=True)
+        response.raise_for_status()  # Raise an exception for HTTP errors
+        image = Image.open(BytesIO(response.content))
+
+        # Convert RGBA (PNG with transparency) to RGB
+        if image.mode == "RGBA":
+            image = image.convert("RGB")
+
+        image.thumbnail(size)  # Resize while maintaining aspect ratio
+
+        # Convert resized image to bytes
+        img_io = BytesIO()
+        image.save(img_io, format="JPEG", quality=85)
+        img_io.seek(0)
+
+        # Create a filename based on the file id extracted from the URL
+        # Ensure that the URL contains 'id=' to extract a proper file id.
+        file_id_part = image_url.split('id=')[-1]
+        resized_filename = f"resized_{file_id_part}.jpg"
+
+        # Save resized image in the static folder
+        # IMPORTANT: Use a leading slash so that the browser can resolve it
+        resized_path = f"/static/{resized_filename}"
+        with open("static/" + resized_filename, "wb") as f:
+            f.write(img_io.getbuffer())
+
+        return resized_path
+    except Exception as e:
+        print("Image Resize Error:", e)
+        return image_url  # Return the original URL if resizing fails
 
 
 @app.route('/cart')
@@ -571,7 +720,8 @@ def cart():
 
     # Convert ObjectId to string for template rendering
     for item in cart_items:
-        item["_id"] = str(item["_id"])
+        for img in item["images"]:
+            img["resized_url"] = resize_image_from_url(img["image_url"])
 
     return render_template('cart.html', cart_items=cart_items)
 
@@ -672,8 +822,8 @@ def submit_upcycle():
     image_links = []
     for image in images:
         file_stream = BytesIO(image.read())
-        shareable_link = upload_to_drive_in_folder(image.stream, image.filename, user_folder_id)
-        image_links.append(shareable_link)
+        image_link, file_id = upload_to_drive_in_folder(file_stream, image.filename, user_folder_id)
+        image_links.append({"file_id": file_id, "image_url": image_link})
 
     # Save to the upcycle collection
     upcycle_request = {

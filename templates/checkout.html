@@ -26,12 +26,12 @@
                                 <li><a href="/contact-me">Contact Me</a></li>
 
                                 {% if session.get("user") %}
-                                <li class="active"><a href="/my-account">My Account</a></li>
+                                <li><a href="/my-account">My Account</a></li>
                                 {% else %}
                                 <a href="/login" class="btn btn-primary login-btn">Login</a>
                                 {% endif %}
 
-                                <li>
+                                <li class="active">
                                     <a href="/cart" class="cart-icon">
                                         <img src="static/images/cart-icon.png" alt="Cart" width="24" height="24" />
                                     </a>
@@ -45,37 +45,19 @@
     </header>
 </div>
 
+
 <div class="container my-5">
-    <div class="row">
-        <!-- Left Sidebar -->
-        <div class="col-md-3">
-            <div class="card">
-                <div class="list-group list-group-flush">
-                    <a href="/my-account" class="list-group-item list-group-item-action {% if active_page == 'my_account' %}active{% endif %}">My Account</a>
-                    <a href="/saved-address" class="list-group-item list-group-item-action {% if active_page == 'saved_address' %}active{% endif %}">Saved Address</a>
-                    <a href="/order-history" class="list-group-item list-group-item-action {% if active_page == 'order_history' %}active{% endif %}">Order History</a>
-                    <a href="/settings" class="list-group-item list-group-item-action {% if active_page == 'settings' %}active{% endif %}">Settings</a>
-                    <a href="/logout" class="list-group-item list-group-item-action text-danger">Logout</a>
-                </div>
-            </div>
-        </div>
+    <h2>Checkout</h2>
+    <form action="{{ url_for('select_address') }}" method="POST">
+        <ul class="list-group">
+            {% for item in cart_items %}
+                <li class="list-group-item">
+                    <p>{{ item.description }}</p>
+                    <p>Google Drive Folder: <a href="{{ item.folder_link }}" target="_blank">View Images</a></p>
 
-        <!-- Main Content Area -->
-        <div class="col-md-9">
-    <div class="card">
-        <div class="card-header bg-secondary text-white">
-            <h5>Order History</h5>
-        </div>
-        <div class="card-body">
-            {% if orders %}
-                <ul class="list-group">
-                    {% for order in orders %}
-                        <li class="list-group-item">
-                            <p>{{ order.description }}</p>
 
-                            <!-- Show only the first image -->
-                            <div class="d-flex">
-    {% for img in order.images %}
+                    <div class="d-flex">
+    {% for img in item.images %}
         <img src="{{ img.resized_url }}"
              alt="Upcycle Image"
              class="img-thumbnail mx-2"
@@ -85,24 +67,16 @@
     {% endfor %}
 </div>
 
-                            <p>Status: <strong>{{ order.status }}</strong></p>
-                            <p>Price: ₹{{ order.price if order.price else "Pending" }}</p>
-                            <p>Payment: <span class="badge bg-warning">{{ order.payment }}</span></p>
-                            <p>Delivery Status: <span class="badge bg-info">{{ order.delivery_status }}</span></p>
-                            <p>Delivery Address: {{ order.del_add }}</p>
+<label for="price_{{ item._id }}">Enter Price (₹):</label>
+<input type="number" id="price_{{ item._id }}" name="price_{{ item._id }}" required class="form-control" min="1">
 
+                    <input type="hidden" name="cart_id" value="{{ item._id }}">
+                </li>
+            {% endfor %}
+        </ul>
 
-                        </li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <p class="text-muted text-center">📦 No orders placed yet!</p>
-            {% endif %}
-        </div>
-    </div>
-</div>
-
-    </div>
+        <button type="submit" class="btn btn-primary mt-3">Proceed to Address Selection</button>
+    </form>
 </div>
 
 {% include "footer.html" %}

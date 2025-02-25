@@ -1,0 +1,32 @@
+{% include "header.html" %}
+
+<div class="container my-5">
+    <h2>Select Delivery Address</h2>
+
+    <form action="{{ url_for('place_order') }}" method="POST">
+        {% if saved_addresses %}
+            <ul class="list-group">
+                {% for address in saved_addresses %}
+                    <li class="list-group-item">
+                        <input type="radio" name="selected_address" value="{{ address._id }}" required>
+                        <label>
+                            <strong>{{ address.name }}</strong><br>
+                            {{ address.address_line_1 }}, {{ address.address_line_2 }}<br>
+                            {{ address.city }}, {{ address.state }} - {{ address.pincode }}
+                        </label>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No saved addresses found.</p>
+        {% endif %}
+
+        <a href="{{ url_for('add_address') }}" class="btn btn-secondary mt-3">Add New Address</a>
+
+        {% if saved_addresses %}
+            <button type="submit" class="btn btn-primary mt-3">Confirm Address & Place Order</button>
+        {% endif %}
+    </form>
+</div>
+
+{% include "footer.html" %}
