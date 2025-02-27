@@ -23,7 +23,83 @@ from googleapiclient.http import MediaIoBaseUpload
 import uuid
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
+from googleapiclient.discovery import build
+from google.oauth2 import service_account
+from googleapiclient.http import MediaIoBaseUpload
+import io
 
+SCOPES = ['https://www.googleapis.com/auth/drive.file']
+SERVICE_ACCOUNT_FILE = 'credentials.json'
+
+
+# Initialize Google Drive API with Shared Drive support
+def initialize_drive():
+    creds = service_account.Credentials.from_service_account_file(
+        SERVICE_ACCOUNT_FILE, scopes=SCOPES
+    )
+    return build('drive', 'v3', credentials=creds)
+
+
+drive_service = initialize_drive()
+
+
+# Function to find folder ID in Shared Drive
+def get_folder_id(folder_name, shared_drive_id):
+    query = f"name='{folder_name}' and mimeType='application/vnd.google-apps.folder' and trashed=false"
+    results = drive_service.files().list(
+        q=query,
+        fields="files(id, name)",
+        includeItemsFromAllDrives=True,
+        supportsAllDrives=True,
+        corpora="drive",
+        driveId=shared_drive_id
+    ).execute()
+    folders = results.get('files', [])
+    return folders[0]['id'] if folders else None
+
+
+# Function to create folder in Shared Drive
+def create_folder_in_drive(folder_name, parent_folder_id):
+    folder_metadata = {
+        'name': folder_name,
+        'mimeType': 'application/vnd.google-apps.folder',
+        'parents': [parent_folder_id],
+    }
+    folder = drive_service.files().create(
+        body=folder_metadata,
+        fields='id',
+        supportsAllDrives=True
+    ).execute()
+
+    folder_id = folder['id']
+    folder_link = f"https://drive.google.com/drive/folders/{folder_id}"
+    return folder_id, folder_link
+
+
+
+# Function to upload a file to a folder in Shared Drive
+def upload_to_drive_in_folder(file_stream, file_name, folder_id):
+    file_metadata = {
+        'name': file_name,
+        'parents': [folder_id]
+    }
+    media = MediaIoBaseUpload(file_stream, mimetype='image/jpeg', resumable=True)
+    file = drive_service.files().create(
+        body=file_metadata,
+        media_body=media,
+        fields='id',
+        supportsAllDrives=True
+    ).execute()
+
+    file_id = file.get('id')
+    drive_service.permissions().create(
+        fileId=file_id,
+        body={'type': 'anyone', 'role': 'reader'},
+        supportsAllDrives=True
+    ).execute()
+
+    shareable_link = f"https://drive.google.com/uc?export=view&id={file_id}"
+    return shareable_link, file_id
 
 
 app = Flask(__name__)
@@ -130,55 +206,55 @@ def send_email(email, subject, body, EMAIL_ADDRESS, EMAIL_PASSWORD):
     except Exception as e:
         print(f"Failed to send email: {e}")
 
-def initialize_drive():
-    SCOPES = ['https://www.googleapis.com/auth/drive.file']
-    creds = Credentials.from_service_account_file('credentials.json', scopes=SCOPES)
-    drive_service = build('drive', 'v3', credentials=creds)
-    return drive_service
-
-def create_folder_in_drive(folder_name, parent_folder_id=None):
-    drive_service = initialize_drive()
-    folder_metadata = {
-        'name': folder_name,
-        'mimeType': 'application/vnd.google-apps.folder'
-    }
-    if parent_folder_id:
-        folder_metadata['parents'] = [parent_folder_id]
-
-    folder = drive_service.files().create(body=folder_metadata, fields='id').execute()
-    folder_id = folder.get('id')
-
-    drive_service.permissions().create(
-        fileId=folder_id,
-        body={'type': 'anyone', 'role': 'reader'}
-    ).execute()
-
-    folder_link = f"https://drive.google.com/drive/folders/{folder_id}"
-    return folder_id, folder_link
-
-# Upload file to a specific folder in Google Drive
-def upload_to_drive_in_folder(file_stream, file_name, folder_id):
-
-
-    drive_service = initialize_drive()
-    file_metadata = {
-        'name': file_name,
-        'parents': [folder_id]
-    }
-    media = MediaIoBaseUpload(file_stream, mimetype='image/jpeg', resumable=True)
-    file = drive_service.files().create(body=file_metadata, media_body=media, fields='id').execute()
-
-    # Make the file publicly accessible
-    file_id = file.get('id')
-    drive_service.permissions().create(
-        fileId=file_id,
-        body={'type': 'anyone', 'role': 'reader'},
-        fields = "id"
-    ).execute()
-
-    # Generate shareable link
-    shareable_link = f"https://drive.google.com/uc?export=view&id={file_id}"
-    return shareable_link, file_id
+# # def initialize_drive():
+# #     SCOPES = ['https://www.googleapis.com/auth/drive.file']
+# #     creds = Credentials.from_service_account_file('credentials.json', scopes=SCOPES)
+# #     drive_service = build('drive', 'v3', credentials=creds)
+# #     return drive_service
+#
+# def create_folder_in_drive(folder_name, parent_folder_id=None):
+#     drive_service = initialize_drive()
+#     folder_metadata = {
+#         'name': folder_name,
+#         'mimeType': 'application/vnd.google-apps.folder'
+#     }
+#     if parent_folder_id:
+#         folder_metadata['parents'] = [parent_folder_id]
+#
+#     folder = drive_service.files().create(body=folder_metadata, fields='id').execute()
+#     folder_id = folder.get('id')
+#
+#     drive_service.permissions().create(
+#         fileId=folder_id,
+#         body={'type': 'anyone', 'role': 'reader'}
+#     ).execute()
+#
+#     folder_link = f"https://drive.google.com/drive/folders/{folder_id}"
+#     return folder_id, folder_link
+#
+# # Upload file to a specific folder in Google Drive
+# def upload_to_drive_in_folder(file_stream, file_name, folder_id):
+#
+#
+#     drive_service = initialize_drive()
+#     file_metadata = {
+#         'name': file_name,
+#         'parents': [folder_id]
+#     }
+#     media = MediaIoBaseUpload(file_stream, mimetype='image/jpeg', resumable=True)
+#     file = drive_service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+#
+#     # Make the file publicly accessible
+#     file_id = file.get('id')
+#     drive_service.permissions().create(
+#         fileId=file_id,
+#         body={'type': 'anyone', 'role': 'reader'},
+#         fields = "id"
+#     ).execute()
+#
+#     # Generate shareable link
+#     shareable_link = f"https://drive.google.com/uc?export=view&id={file_id}"
+#     return shareable_link, file_id
 
 # Dictionary to store OTPs temporarily
 otp_storage = {}

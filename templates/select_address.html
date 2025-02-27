@@ -1,5 +1,50 @@
 {% include "header.html" %}
 
+<div class="page">
+    <!-- Page Header -->
+    <header class="section page-header">
+        <div class="rd-navbar-wrap">
+            <nav class="rd-navbar drop-menu" data-layout="rd-navbar-fixed">
+                <div class="rd-navbar-main-outer">
+                    <div class="rd-navbar-main">
+                        <div class="rd-navbar-panel">
+                            <button class="rd-navbar-toggle" data-rd-navbar-toggle=".rd-navbar-nav-wrap"><span></span></button>
+                            <div class="rd-navbar-brand">
+                                <a class="brand" href="/">
+                                    <div class="brand__name">
+                                        <img class="brand__logo-dark" src="static/images/kalasuttra-logo1.png" alt="" width="100" height="57" />
+                                        <img class="brand__logo-light" src="static/images/kalasuttra-logo1.png" alt="" width="100" height="57" />
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="rd-navbar-nav-wrap">
+                            <ul class="rd-navbar-nav">
+                                <li><a href="/">Home</a></li>
+                                <li><a href="/about-kalasuttra">About Kalasuttra</a></li>
+                                <li><a href="/upcycle">Upcycle</a></li>
+                                <li><a href="/contact-me">Contact Me</a></li>
+
+                                {% if session.get("user") %}
+                                <li><a href="/my-account">My Account</a></li>
+                                {% else %}
+                                <a href="/login" class="btn btn-primary login-btn">Login</a>
+                                {% endif %}
+
+                                <li class="active">
+                                    <a href="/cart" class="cart-icon">
+                                        <img src="static/images/cart-icon.png" alt="Cart" width="24" height="24" />
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+</div>
+
 <div class="container my-5">
     <h2>Select Delivery Address</h2>
 
