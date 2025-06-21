@@ -13,16 +13,16 @@
                 <button class="rd-navbar-toggle" data-rd-navbar-toggle=".rd-navbar-nav-wrap"><span></span></button>
                 <!-- RD Navbar Brand -->
                 <div class="rd-navbar-brand"><a class="brand" href="/">
-                        <div class="brand__name"><img class="brand__logo-dark" src="static/images/kalasuttra-logo1.png" alt="" width="100" height="57" /><img class="brand__logo-light" src="static/images/kalasuttra-logo1.png" alt="" width="100" height="57" />
+                        <div class="brand__name"><img class="brand__logo-dark" src="static/images/sutkala_1.png" alt="" width="100" height="57" /><img class="brand__logo-light" src="static/images/sutkala_1.png" alt="" width="100" height="57" />
                         </div></a></div>
             </div>
             <!-- RD Navbar Nav -->
             <div class="rd-navbar-nav-wrap">
                 <ul class="rd-navbar-nav">
                     <li><a href="/">Home</a></li>
-                    <li><a href="/about-kalasuttra">About kalasuttra</a></li>
+                    <li><a href="/about-kalasuttra">About SutaKala</a></li>
                     <li class="active"><a href="/upcycle">Upcycle</a></li>
-                    <li><a href="/contact-me">Contact Me</a></li>
+                    <li><a href="/contact-me">Contact Us</a></li>
 
                     {% if session.get("user") %}
     <!-- My Account Link -->
@@ -84,17 +84,7 @@
             </div>
             <div class="item">
               <div class="slick-slide-inner">
-                <div class="slick-slide-caption"><a class="thumb-ann thumb-mixed_large" href="static/images/group-image-2-1200x800-original.jpg" data-lightgallery="item"><img class="thumb-ann__image" src="static/images/home1-4-961x664.jpg" alt="" width="961" height="664"/>
-                    <div class="thumb-ann__caption">
-                      <p class="thumb-ann__title heading-3">Harold &amp; Mary</p>
-                      <p class="thumb-ann__text">With the experience of more than 10 years, I am glad to offer you a wide variety of love story photography services at affordable prices.</p>
-                    </div></a>
-                </div>
-              </div>
-            </div>
-              <div class="item">
-              <div class="slick-slide-inner">
-                <div class="slick-slide-caption"><a class="thumb-ann thumb-mixed_large" href="static/images/group-image-2-1200x800-original.jpg" data-lightgallery="item"><img class="thumb-ann__image" src="static/images/home1-4-961x664.jpg" alt="" width="961" height="664"/>
+                <div class="slick-slide-caption"><a class="thumb-ann thumb-mixed_large" href="static/images/project2.jpg" data-lightgallery="item"><img class="thumb-ann__image" src="static/images/project2.jpg" alt="" width="961" height="664"/>
                     <div class="thumb-ann__caption">
                       <p class="thumb-ann__title heading-3">Harold &amp; Mary</p>
                       <p class="thumb-ann__text">With the experience of more than 10 years, I am glad to offer you a wide variety of love story photography services at affordable prices.</p>
@@ -106,39 +96,68 @@
         </div>
       </section>
 
+<div class="container mt-5">
+  <div class="row">
+
+    <!-- Submission Form -->
+    <div class="col-md-6 mb-4 mb-md-0">
+      <h2 class="text-center">Upcycle Your Dress</h2>
+      <p class="text-center">Choose how you'd like to proceed</p>
+
+      <form action="{{ url_for('submit_upcycle') }}" method="POST" enctype="multipart/form-data" class="mt-4 mb-5">
+  <input type="hidden" name="submission_type" id="submission_type">
+
+  <div class="mb-3">
+    <input type="text" class="form-control" id="name" name="name" placeholder="Your Name" required>
+  </div>
+
+  <div class="mb-3">
+    <input type="email" class="form-control" id="email" name="email" placeholder="Email Address" required>
+  </div>
+
+  <div class="mb-3">
+    <input type="tel" class="form-control" id="phone" name="phone" placeholder="Phone Number" required>
+  </div>
+
+  <div class="mb-3">
+    <textarea class="form-control" id="description" name="description" rows="4" placeholder="Briefly describe your dress or request" required></textarea>
+  </div>
+
+  <div class="mb-4">
+    <input type="file" class="form-control" id="file" name="file[]" multiple>
+  </div>
+
+  <div class="d-flex justify-content-around">
+    <button type="submit" onclick="document.getElementById('submission_type').value='sell'" class="btn btn-primary">Sell the Dress</button>
+    <a href="{{ url_for('upcycle_measurement') }}" class="btn btn-secondary">Get Upcycled Product</a>
+  </div>
+</form>
 
 
-  <!-- Submission Form -->
-  <div class="container mt-5 mb-5">
-        <h2 class="text-center">Submit Your Upcycling Request</h2>
-        <p class="text-center">Please fill out the form below with the required details to submit your upcycling request.</p>
-        <form action="{{ url_for('submit_upcycle') }}" method="POST" enctype="multipart/form-data" class="mt-4">
-            <div class="mb-3">
-                <label for="name" class="form-label">Name</label>
-                <input type="text" id="name" name="name" class="form-control" required placeholder="Enter your full name">
-            </div>
-            <div class="mb-3">
-                <label for="email" class="form-label">Email</label>
-                <input type="email" id="email" name="email" class="form-control" required placeholder="Enter your email address">
-            </div>
-            <div class="mb-3">
-                <label for="phone" class="form-label">Phone Number</label>
-                <input type="tel" id="phone" name="phone" class="form-control" required placeholder="Enter your phone number">
-            </div>
-            <div class="mb-3">
-                <label for="description" class="form-label">Description</label>
-                <textarea id="description" name="description" rows="4" class="form-control" required placeholder="Describe your upcycling request"></textarea>
-            </div>
-            <div class="mb-3">
-                <label for="file" class="form-label">Upload Images</label>
-                <input type="file" id="file" name="file[]" class="form-control" multiple>
-                <small class="text-muted">Upload multiple images related to your request</small>
-            </div>
-            <button type="submit" class="btn btn-success w-100">Submit</button>
-        </form>
     </div>
+
+    <!-- Catalog Section -->
+    <!-- Catalog Section -->
+<div class="col-md-6 text-center d-flex flex-column align-items-center justify-content-center">
+  <h3 class="mb-3">Explore Our Upcycled Designs</h3>
+  <p>See how we transform old clothes into new looks.</p>
+
+  <a href="{{ url_for('catalog') }}">
+    <img src="{{ url_for('static', filename='images/catalog-preview.jpg') }}"
+         alt="Catalog Preview"
+         class="img-fluid mb-3"
+         style="max-height: 300px;">
+  </a>
+
+  <!-- Centered Button -->
+  <a href="{{ url_for('catalog') }}" class="btn btn-success">View Catalog</a>
 </div>
+
+
+  </div>
+</div>
+
 <!--<script src="{{ url_for('static', filename='js/carousel.js') }}"></script>-->
 {% include "footer.html" %}
 
-      
+

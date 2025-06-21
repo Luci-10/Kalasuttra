@@ -1,0 +1,67 @@
+{% include "header.html" %}
+
+<div class="container mt-5 mb-5">
+  <h2 class="text-center">Help Us With Your Measurements</h2>
+  <p class="text-center">To create your perfect upcycled outfit, please share a few details below.</p>
+
+  <form action="{{ url_for('submit_measurements') }}" method="POST" class="mt-4">
+
+    <div class="mb-3">
+      <input type="text" class="form-control" name="name" placeholder="Your Name" required>
+    </div>
+
+    <div class="mb-3">
+      <input type="email" class="form-control" name="email" placeholder="Email (optional)">
+    </div>
+
+    <div class="mb-3">
+      <select class="form-select" id="gender" name="gender" onchange="toggleMeasurementFields()" required>
+        <option value="" disabled selected>Select Gender</option>
+        <option value="female">Female</option>
+        <option value="male">Male</option>
+      </select>
+    </div>
+
+    <!-- Common Fields -->
+    <div id="common-fields">
+      <div class="mb-3">
+        <input type="text" class="form-control" name="waist" placeholder="Waist (inches)" required>
+      </div>
+      <div class="mb-3">
+        <input type="text" class="form-control" name="hip" placeholder="Hip (inches)" required>
+      </div>
+      <div class="mb-3">
+        <input type="text" class="form-control" name="height" placeholder="Height (inches)" required>
+      </div>
+    </div>
+
+    <!-- Female-specific Fields -->
+    <div id="female-fields" style="display: none;">
+      <div class="mb-3">
+        <input type="text" class="form-control" name="bust" placeholder="Bust (inches)">
+      </div>
+    </div>
+
+    <!-- Male-specific Fields -->
+    <div id="male-fields" style="display: none;">
+      <div class="mb-3">
+        <input type="text" class="form-control" name="chest" placeholder="Chest (inches)">
+      </div>
+      <div class="mb-3">
+        <input type="text" class="form-control" name="shoulder" placeholder="Shoulder Width (inches)">
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-success w-100 mt-3">Submit Measurements</button>
+  </form>
+</div>
+
+<script>
+  function toggleMeasurementFields() {
+    const gender = document.getElementById("gender").value;
+    document.getElementById("female-fields").style.display = gender === "female" ? "block" : "none";
+    document.getElementById("male-fields").style.display = gender === "male" ? "block" : "none";
+  }
+</script>
+
+{% include "footer.html" %}

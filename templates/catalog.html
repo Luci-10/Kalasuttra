@@ -1,0 +1,22 @@
+{% include "header.html" %}
+
+<div class="container mt-5 mb-5 text-center">
+    <h2>Upcycle Catalog</h2>
+    <p>Explore our range of beautiful upcycled designs.</p>
+    <div class="row">
+        <div class="col-md-4">
+            <img src="{{ url_for('static', filename='images/up1.jpg') }}" class="img-fluid" alt="Design 1">
+            <p class="mt-2">Boho Jacket from Saree</p>
+        </div>
+        <div class="col-md-4">
+            <img src="{{ url_for('static', filename='images/up2.jpg') }}" class="img-fluid" alt="Design 2">
+            <p class="mt-2">Denim Patchwork Tote</p>
+        </div>
+        <div class="col-md-4">
+            <img src="{{ url_for('static', filename='images/up3.jpg') }}" class="img-fluid" alt="Design 3">
+            <p class="mt-2">Kurta Recycled into Kaftan</p>
+        </div>
+    </div>
+</div>
+
+{% include "footer.html" %}

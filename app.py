@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, flash, session, request
+from flask import Flask, render_template, redirect, url_for, flash, session, request, jsonify
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Email, EqualTo, Length
@@ -113,6 +113,7 @@ upcycle_collection = db['upcycle']
 appointments_collection = db['appointments']
 cart = db['cart']
 orders = db['orders']
+subscribers = db["subscribers"]
 
 
 # Flask-Mail Configuration
@@ -142,6 +143,15 @@ def get_unique_user_id():
         return user_data["user_id"] if user_data and "user_id" in user_data else None
     return None
 
+
+@app.route('/subscribe', methods=['POST'])
+def subscribe():
+    email = request.form.get('email')
+    if email:
+        # Insert into MongoDB
+        subscribers.insert_one({"email": email})
+        return jsonify({"status": "success", "message": "Subscribed successfully"}), 200
+    return jsonify({"status": "error", "message": "Invalid email"}), 400
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -936,7 +946,7 @@ def submit_upcycle():
     Phone: {phone}
     Description: {description}
     Google Drive Folder with Uploaded Images:
-    {folder_link}
+    {folder_link} 
 
     
     """
@@ -944,6 +954,34 @@ def submit_upcycle():
 
     flash("Your request has been submitted successfully!", "success")
     return redirect(url_for("upcycle"))
+
+@app.route('/upcycle-measurement-form')
+@logged_in_only
+def upcycle_measurement():
+    return render_template('upcycle-measurement.html')
+
+@app.route('/submit-measurements', methods=['POST'])
+@logged_in_only
+def submit_measurements():
+    data = {
+        "user_id": get_unique_user_id(),
+        "name": request.form.get("name"),
+        "email": request.form.get("email"),
+        "bust": request.form.get("bust"),
+        "waist": request.form.get("waist"),
+        "hip": request.form.get("hip"),
+        "height": request.form.get("height"),
+        "submitted_at": datetime.utcnow()
+    }
+    db.measurements.insert_one(data)
+    send_email("shubhamsheshank63@gmail.com", "New Measurement Submission", str(data), EMAIL_ADDRESS, EMAIL_PASSWORD)
+    flash("Measurements submitted!", "success")
+    return redirect(url_for("upcycle"))
+
+@app.route('/catalog')
+def catalog():
+    return render_template('catalog.html')
+
 
 
 
